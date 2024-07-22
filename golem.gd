@@ -53,16 +53,16 @@ func _physics_process(delta: float) -> void:
 			
 	velocity.x = new_x_velocity
 	
-	move_and_slide()
+	#move_and_slide()
 	
-	#var collision = move_and_collide(velocity * delta)
-	#if collision:
-		#print(collision.get_collider().name)
-		#if(collision.get_collider().name == 'Floor'):
-			#velocity = velocity.slide(collision.get_normal())
-			#isOnFloor = true
-		#if(collision.get_collider().name == 'Player'):
-			#isPaused = true
+	var collision = move_and_collide(velocity * delta)
+	if collision:
+		print(collision.get_collider().name)
+		if(collision.get_collider().name == 'Floor'):
+			velocity = velocity.slide(collision.get_normal())
+			isOnFloor = true
+		if(collision.get_collider().name == 'Player'):
+			isPaused = true
 
 
 func _on_animation_finished(anim_name: StringName) -> void:
