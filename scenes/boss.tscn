@@ -1,8 +1,8 @@
 [gd_scene load_steps=8 format=3 uid="uid://ciae80q2v7oh8"]
 
-[ext_resource type="Script" path="res://boss.gd" id="1_qyyk3"]
-[ext_resource type="Texture2D" uid="uid://b5setey5btmxo" path="res://sprites/redarrowenemy.png" id="2_l2jgx"]
-[ext_resource type="Script" path="res://ClubArea2D.gd" id="3_egqj2"]
+[ext_resource type="Script" path="res://boss.gd" id="1_7ewb0"]
+[ext_resource type="Texture2D" uid="uid://b5setey5btmxo" path="res://sprites/redarrowenemy.png" id="2_qfitg"]
+[ext_resource type="Script" path="res://ClubArea2D.gd" id="3_i8abv"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_8jokq"]
 radius = 5.92707
@@ -118,14 +118,14 @@ _data = {
 
 [node name="Boss" type="Area2D"]
 scale = Vector2(3, 3)
-script = ExtResource("1_qyyk3")
+script = ExtResource("1_7ewb0")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("2_l2jgx")
+texture = ExtResource("2_qfitg")
 hframes = 18
 
 [node name="ClubArea2D" type="Area2D" parent="Sprite2D" groups=["bossAttack"]]
-script = ExtResource("3_egqj2")
+script = ExtResource("3_i8abv")
 
 [node name="ClubHitbox" type="CollisionShape2D" parent="Sprite2D/ClubArea2D"]
 position = Vector2(0, 15)

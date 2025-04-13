@@ -1,0 +1,488 @@
+[gd_scene load_steps=14 format=3 uid="uid://dcjoexv5aerp"]
+
+[ext_resource type="Script" path="res://golem.gd" id="1_3yl7p"]
+[ext_resource type="Texture2D" uid="uid://cdohgtkh12xak" path="res://sprites/golemBoss-Sheet.png" id="1_s80jd"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fay32"]
+size = Vector2(74, 34)
+
+[sub_resource type="Animation" id="Animation_86apg"]
+resource_name = "Idle"
+length = 0.1
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame_coords")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2i(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../GolemHurtbox:polygon")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [PackedVector2Array(6, 0, 24, -42, 8, -88, -8, -88, -24, -42, -10, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("../GolemHurtbox:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_jny1s"]
+resource_name = "Jump"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame_coords")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [Vector2i(0, 6), Vector2i(1, 6)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../GolemHurtbox:polygon")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [PackedVector2Array(44, 0, 44, -44, 4, -74, -6, -74, -46, -44, -46, 0), PackedVector2Array(34, 0, 34, -44, 4, -62, -8, -62, -38, -42, -36, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("../GolemHurtbox:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-8, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("JumpArea2D/JumpHitbox:disabled")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.1),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_5lxil"]
+resource_name = "JumpStart"
+length = 0.7
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame_coords")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [Vector2i(0, 5), Vector2i(1, 5), Vector2i(2, 5), Vector2i(3, 5), Vector2i(4, 5), Vector2i(5, 5), Vector2i(6, 5)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../GolemHurtbox:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(-4, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("../GolemHurtbox:polygon")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.4, 0.5, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [PackedVector2Array(21, -4, 35, -32, 5, -82, -11, -78, -19, -22, -4, 0), PackedVector2Array(12, -2, 28, -32, -14, -78, -28, -70, -24, -22, -8, 0), PackedVector2Array(12, -2, 26, -32, -14, -78, -28, -70, -24, -22, -8, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_k6614"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame_coords")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2i(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("StompArea2D/StompHitbox:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("../GolemHurtbox:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("../GolemHurtbox:polygon")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [PackedVector2Array(8, 0, 24, -42.6667, 10.6667, -88, -10.6667, -88, -24, -42.6667, -10.6667, 0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("JumpArea2D/JumpHitbox:disabled")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("RockUpArea2D/RockUpHitbox:disabled")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("RockSlamArea2D/RockSlamHitbox:disabled")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_8uq4p"]
+resource_name = "RockHold"
+length = 0.1
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame_coords")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [Vector2i(0, 8)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../GolemHurtbox:polygon")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [PackedVector2Array(6, 0, 24, -42, 8, -88, -52, -86, -66, -72, -66, -58, -56, -48, -22, -42, -10, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_qgsvv"]
+resource_name = "RockPickup"
+length = 0.7
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame_coords")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [Vector2i(0, 2), Vector2i(1, 2), Vector2i(2, 2), Vector2i(3, 2), Vector2i(4, 2), Vector2i(5, 2), Vector2i(6, 2)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("RockUpArea2D/RockUpHitbox:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.5, 0.6),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("../GolemHurtbox:polygon")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.1, 0.2, 0.3, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [PackedVector2Array(6, 0, 22, -48, 12, -66, -42, -58, -42, -36, -24, -36, -34, 0), PackedVector2Array(6, 0, 22, -38, 22, -56, -14, -84, -30, -76, -22, -20, -34, -14, -40, 0), PackedVector2Array(6, 0, 22, -38, 22, -56, -16, -86, -28, -76, -22, -20, -34, -14, -40, 0), PackedVector2Array(6, 0, 22, -38, 22, -56, 8, -88, -48, -100, -60, -90, -62, -74, -50, -60, -22, -42, -8, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_ws18y"]
+resource_name = "RockSlam"
+length = 0.9
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame_coords")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [Vector2i(0, 3), Vector2i(1, 3), Vector2i(2, 3), Vector2i(3, 3), Vector2i(4, 3), Vector2i(5, 3), Vector2i(6, 3), Vector2i(7, 3), Vector2i(8, 3)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("RockSlamArea2D/RockSlamHitbox:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.4, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("../GolemHurtbox:polygon")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [PackedVector2Array(6, 0, 22, -48, 18, -84, -40, -100, -56, -86, -56, -74, -40, -58, -22, -50, -10, 0), PackedVector2Array(6, 0, 24, -48, 26, -80, -12, -114, -28, -116, -42, -106, -44, -90, -28, -74, -20, -44, -16, 0), PackedVector2Array(6, 0, 24, -42, 36, -68, 16, -122, -2, -130, -22, -120, -22, -102, -10, -80, -20, -44, -22, -10), PackedVector2Array(6, 0, 24, -42, 36, -68, 22, -122, 4, -132, -16, -122, -18, -104, -20, -56, -28, -38, -28, -8), PackedVector2Array(-32, 0, 68, -36, 64, -66, 34, -80, -6, -80, -46, -42, -60, -30, -62, -14, -50, -2), PackedVector2Array(8, 0, 44, -14, 28, -48, -8, -78, -22, -74, -46, -42, -60, -30, -62, -14, -50, -2), PackedVector2Array(8, 0, 32, -16, 28, -48, -8, -78, -22, -74, -46, -42, -60, -30, -62, -14, -50, -2), PackedVector2Array(8, 0, 24, -48, 8, -88, -6, -88, -50, -62, -62, -50, -64, -36, -50, -20, -10, -2)]
+}
+
+[sub_resource type="Animation" id="Animation_6mudt"]
+resource_name = "RockThrow"
+length = 0.7
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame_coords")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [Vector2i(0, 7), Vector2i(1, 7), Vector2i(2, 7), Vector2i(3, 7), Vector2i(4, 7), Vector2i(5, 7), Vector2i(6, 7)]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("..")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.5),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"throw_rock"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_5d8rx"]
+resource_name = "Stomp"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame_coords")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1), Vector2i(3, 1), Vector2i(4, 1)]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("..")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.4),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"handle_golem_stomp_move"
+}]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("StompArea2D/StompHitbox:disabled")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.4, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_rnkic"]
+_data = {
+"Idle": SubResource("Animation_86apg"),
+"Jump": SubResource("Animation_jny1s"),
+"JumpStart": SubResource("Animation_5lxil"),
+"RESET": SubResource("Animation_k6614"),
+"RockHold": SubResource("Animation_8uq4p"),
+"RockPickup": SubResource("Animation_qgsvv"),
+"RockSlam": SubResource("Animation_ws18y"),
+"RockThrow": SubResource("Animation_6mudt"),
+"Stomp": SubResource("Animation_5d8rx")
+}
+
+[node name="Golem" type="CharacterBody2D"]
+scale = Vector2(4, 4)
+collision_layer = 4
+script = ExtResource("1_3yl7p")
+
+[node name="GolemSprite" type="Sprite2D" parent="."]
+texture = ExtResource("1_s80jd")
+centered = false
+offset = Vector2(-66, -130)
+hframes = 9
+vframes = 9
+
+[node name="StompArea2D" type="Area2D" parent="GolemSprite"]
+collision_layer = 8
+collision_mask = 2
+
+[node name="StompHitbox" type="CollisionPolygon2D" parent="GolemSprite/StompArea2D"]
+visible = false
+polygon = PackedVector2Array(2.66667, 0, 2.66667, -40, -29.3333, -40, -26.6667, -16, -18.6667, -5.33333, -8, 0)
+disabled = true
+
+[node name="JumpArea2D" type="Area2D" parent="GolemSprite"]
+collision_layer = 8
+collision_mask = 2
+
+[node name="JumpHitbox" type="CollisionShape2D" parent="GolemSprite/JumpArea2D"]
+visible = false
+position = Vector2(-9, -15)
+shape = SubResource("RectangleShape2D_fay32")
+disabled = true
+
+[node name="RockUpArea2D" type="Area2D" parent="GolemSprite"]
+collision_layer = 8
+collision_mask = 2
+
+[node name="RockUpHitbox" type="CollisionPolygon2D" parent="GolemSprite/RockUpArea2D"]
+visible = false
+polygon = PackedVector2Array(-58, -96, -58, -80, -40, 0, 0, 0, -14, -84, -20, -100, -32, -108, -44, -108)
+disabled = true
+
+[node name="RockSlamArea2D" type="Area2D" parent="GolemSprite"]
+collision_layer = 8
+collision_mask = 2
+
+[node name="RockSlamHitbox" type="CollisionPolygon2D" parent="GolemSprite/RockSlamArea2D"]
+visible = false
+polygon = PackedVector2Array(0, -132, -38, -124, -54, -104, -62, -84, -62, -52, -62, -16, -54, -4, -44, 0, -16, 0, -18, -72, 22, -96, 26, -108, 20, -124)
+disabled = true
+
+[node name="AP" type="AnimationPlayer" parent="."]
+root_node = NodePath("../GolemSprite")
+libraries = {
+"": SubResource("AnimationLibrary_rnkic")
+}
+
+[node name="GolemHurtbox" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(8, 0, 24, -42.6667, 10.6667, -88, -10.6667, -88, -24, -42.6667, -10.6667, 0)
+
+[node name="AttackCooldownTimer" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="body_entered" from="GolemSprite/StompArea2D" to="." method="_on_stomp_area_2d_body_entered"]
+[connection signal="body_entered" from="GolemSprite/JumpArea2D" to="." method="_on_jump_area_2d_body_entered"]
+[connection signal="body_entered" from="GolemSprite/RockUpArea2D" to="." method="_on_rock_up_area_2d_body_entered"]
+[connection signal="body_entered" from="GolemSprite/RockSlamArea2D" to="." method="_on_rock_slam_area_2d_body_entered"]
+[connection signal="animation_finished" from="AP" to="." method="_on_animation_finished"]

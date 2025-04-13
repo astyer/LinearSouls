@@ -11,16 +11,25 @@ config_version=5
 [application]
 
 config/name="LinearSouls"
-run/main_scene="res://main.tscn"
+run/main_scene="res://scenes/main.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
+
+[autoload]
+
+BossHelpers="*res://autoloads/bossHelpers.gd"
+SignalBus="*res://autoloads/signal_bus.gd"
 
 [display]
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
-window/size/mode=2
-window/size/resizable=false
+window/size/mode=3
 window/size/borderless=true
+window/stretch/mode="viewport"
+
+[filesystem]
+
+import/blender/enabled=false
 
 [input]
 

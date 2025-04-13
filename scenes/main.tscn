@@ -1,11 +1,11 @@
 [gd_scene load_steps=18 format=3 uid="uid://bvvyv6gpos4m8"]
 
 [ext_resource type="Script" path="res://Main.gd" id="1_4o2l8"]
-[ext_resource type="PackedScene" uid="uid://dki28xl8ak4l6" path="res://player.tscn" id="2_5t8xr"]
+[ext_resource type="PackedScene" uid="uid://dki28xl8ak4l6" path="res://scenes/player.tscn" id="2_5t8xr"]
 [ext_resource type="Script" path="res://PlayerHealthBar.gd" id="3_jthys"]
-[ext_resource type="PackedScene" uid="uid://23f8dwske8oc" path="res://floor.tscn" id="3_yx326"]
+[ext_resource type="PackedScene" uid="uid://23f8dwske8oc" path="res://scenes/floor.tscn" id="3_yx326"]
 [ext_resource type="Script" path="res://PlayerStaminaBar.gd" id="4_ihp8q"]
-[ext_resource type="PackedScene" uid="uid://dcjoexv5aerp" path="res://golem.tscn" id="6_p6cbk"]
+[ext_resource type="PackedScene" uid="uid://dcjoexv5aerp" path="res://scenes/golem.tscn" id="6_p6cbk"]
 [ext_resource type="FontFile" uid="uid://bep84kjabwnub" path="res://fonts/NightmarePills-BV2w.ttf" id="7_jy6xd"]
 [ext_resource type="Script" path="res://BossHealthBar.gd" id="7_wpavt"]
 
@@ -122,7 +122,7 @@ offset_bottom = 1017.0
 text = "Guardian Golem"
 label_settings = SubResource("LabelSettings_6cspj")
 
-[connection signal="hit_boss" from="Player" to="BossHealthBar" method="_on_player_hit_boss"]
+[connection signal="boss_damaged" from="Player" to="BossHealthBar" method="_on_boss_damaged"]
+[connection signal="player_damaged" from="Player" to="PlayerHealthBar" method="_on_player_damaged"]
 [connection signal="stamina_used" from="Player" to="." method="_on_player_stamina_used"]
 [connection signal="stamina_used" from="Player" to="PlayerStaminaBar" method="_on_player_stamina_used"]
-[connection signal="hit_player" from="Golem" to="PlayerHealthBar" method="_on_hit_player"]
