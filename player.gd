@@ -40,13 +40,13 @@ func _physics_process(delta: float) -> void:
 	process_y_velocity(delta)
 	process_x_velocity()
 	
+	for i in get_slide_collision_count():
+		var collision = get_slide_collision(i)
+		if(collision.get_collider().is_in_group('Bosses')):
+			if(collision.get_depth() > 4): #probably need to adjust
+				print('inside boss')
+	
 	move_and_slide()
-	#for i in get_slide_collision_count():
-		#var collision = get_slide_collision(i)
-		## think we need to do collision from boss side
-		#if(collision.get_collider().is_in_group('Bosses')):
-			#if(collision.get_depth() > 0.1):
-				#print('inside')
 	
 func process_roll() -> void:
 	if(isAttacking):
@@ -83,6 +83,10 @@ func process_x_velocity() -> void:
 		
 	if($AP.current_animation == 'Jump'):
 		velocity.x = move_toward(velocity.x, 0, X_ACCELERATION)
+		return
+		
+	if($AP.current_animation == 'Knocked'):
+		# get knocked
 		return
 	
 	var direction := Input.get_axis("left", "right")
@@ -124,6 +128,9 @@ func _on_player_animation_finished(anim_name: StringName) -> void:
 				$AP.play('Run')
 				return
 			$AP.play_backwards('Accelerate')
+		'Knocked':
+			# play get up
+			pass
 		'OverheadCombo1':
 			if nextAttackRequested && current_stamina >= COMBO_2_STAMINA:
 				$AP.play('OverheadCombo2')
@@ -161,3 +168,4 @@ func _on_oc_3_area_body_entered(_body: Node2D) -> void:
 func _on_hit_player(damage: int, requireOnFloor: bool = false) -> void:
 	if((requireOnFloor && is_on_floor()) || !requireOnFloor):
 		player_damaged.emit(damage)
+		$AP.play('Knocked')	

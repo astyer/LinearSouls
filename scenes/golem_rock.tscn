@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://35gp3y16del1"]
 
-[ext_resource type="Script" path="res://golem_rock.gd" id="1_eyxwj"]
+[ext_resource type="Script" uid="uid://binfdycydsocg" path="res://golem_rock.gd" id="1_eyxwj"]
 [ext_resource type="Texture2D" uid="uid://cykuikbpmv6xc" path="res://sprites/GolemBossRock-Sheet.png" id="2_jiia0"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_jtdpu"]
@@ -111,8 +111,8 @@ tracks/3/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_01jo6"]
 _data = {
-"Break": SubResource("Animation_j6x8m"),
-"RESET": SubResource("Animation_5j30x")
+&"Break": SubResource("Animation_j6x8m"),
+&"RESET": SubResource("Animation_5j30x")
 }
 
 [node name="GolemRock" type="CharacterBody2D"]

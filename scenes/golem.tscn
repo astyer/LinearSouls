@@ -1,6 +1,6 @@
 [gd_scene load_steps=14 format=3 uid="uid://dcjoexv5aerp"]
 
-[ext_resource type="Script" path="res://golem.gd" id="1_3yl7p"]
+[ext_resource type="Script" uid="uid://bs8qqyhn31jur" path="res://golem.gd" id="1_3yl7p"]
 [ext_resource type="Texture2D" uid="uid://cdohgtkh12xak" path="res://sprites/golemBoss-Sheet.png" id="1_s80jd"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fay32"]
@@ -409,15 +409,15 @@ tracks/2/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_rnkic"]
 _data = {
-"Idle": SubResource("Animation_86apg"),
-"Jump": SubResource("Animation_jny1s"),
-"JumpStart": SubResource("Animation_5lxil"),
-"RESET": SubResource("Animation_k6614"),
-"RockHold": SubResource("Animation_8uq4p"),
-"RockPickup": SubResource("Animation_qgsvv"),
-"RockSlam": SubResource("Animation_ws18y"),
-"RockThrow": SubResource("Animation_6mudt"),
-"Stomp": SubResource("Animation_5d8rx")
+&"Idle": SubResource("Animation_86apg"),
+&"Jump": SubResource("Animation_jny1s"),
+&"JumpStart": SubResource("Animation_5lxil"),
+&"RESET": SubResource("Animation_k6614"),
+&"RockHold": SubResource("Animation_8uq4p"),
+&"RockPickup": SubResource("Animation_qgsvv"),
+&"RockSlam": SubResource("Animation_ws18y"),
+&"RockThrow": SubResource("Animation_6mudt"),
+&"Stomp": SubResource("Animation_5d8rx")
 }
 
 [node name="Golem" type="CharacterBody2D"]
@@ -472,14 +472,14 @@ disabled = true
 [node name="AP" type="AnimationPlayer" parent="."]
 root_node = NodePath("../GolemSprite")
 libraries = {
-"": SubResource("AnimationLibrary_rnkic")
+&"": SubResource("AnimationLibrary_rnkic")
 }
-
-[node name="GolemHurtbox" type="CollisionPolygon2D" parent="."]
-polygon = PackedVector2Array(8, 0, 24, -42.6667, 10.6667, -88, -10.6667, -88, -24, -42.6667, -10.6667, 0)
 
 [node name="AttackCooldownTimer" type="Timer" parent="."]
 one_shot = true
+
+[node name="GolemHurtbox" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(8, 0, 24, -42.6667, 10.6667, -88, -10.6667, -88, -24, -42.6667, -10.6667, 0)
 
 [connection signal="body_entered" from="GolemSprite/StompArea2D" to="." method="_on_stomp_area_2d_body_entered"]
 [connection signal="body_entered" from="GolemSprite/JumpArea2D" to="." method="_on_jump_area_2d_body_entered"]

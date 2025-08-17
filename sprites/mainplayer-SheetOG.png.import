@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b5setey5btmxo"
-path="res://.godot/imported/redarrowenemy.png-1aa00e110b0363ff15aef905a0f879d2.ctex"
+uid="uid://dj4k0tt6dyv8a"
+path="res://.godot/imported/mainplayer-SheetOG.png-bd84ff94f3a20dcc75185081378cb385.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/redarrowenemy.png"
-dest_files=["res://.godot/imported/redarrowenemy.png-1aa00e110b0363ff15aef905a0f879d2.ctex"]
+source_file="res://sprites/mainplayer-SheetOG.png"
+dest_files=["res://.godot/imported/mainplayer-SheetOG.png-bd84ff94f3a20dcc75185081378cb385.ctex"]
 
 [params]
 

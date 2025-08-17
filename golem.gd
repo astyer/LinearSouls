@@ -21,7 +21,7 @@ func _ready():
 
 func _physics_process(delta: float) -> void:
 	if !isOnFloor:
-		velocity.y += gravity * delta
+		velocity.y += gravity * delta 
 		
 	var players = get_tree().get_nodes_in_group("players")
 	if players.size() == 0:

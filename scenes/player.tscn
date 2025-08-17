@@ -1,7 +1,7 @@
-[gd_scene load_steps=19 format=3 uid="uid://dki28xl8ak4l6"]
+[gd_scene load_steps=20 format=3 uid="uid://dki28xl8ak4l6"]
 
-[ext_resource type="Script" path="res://player.gd" id="1_n342f"]
-[ext_resource type="Texture2D" uid="uid://dj4k0tt6dyv8a" path="res://sprites/mainplayer-Sheet.png" id="1_ptemd"]
+[ext_resource type="Script" uid="uid://dmsd35x26702" path="res://player.gd" id="1_n342f"]
+[ext_resource type="Texture2D" uid="uid://bdehmpe404n6e" path="res://sprites/mainplayer-Sheet.png" id="1_ptemd"]
 [ext_resource type="AudioStream" uid="uid://bo0xfmm30fmgq" path="res://sfx/swipe1.mp3" id="3_8hag2"]
 [ext_resource type="AudioStream" uid="uid://btgm0t2tqyvru" path="res://sfx/swipe2.mp3" id="4_llh1q"]
 [ext_resource type="AudioStream" uid="uid://8yvvs7dx5h36" path="res://sfx/swipe3.mp3" id="5_axx4h"]
@@ -232,7 +232,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [Vector2i(0, 1)]
+"values": [Vector2i(0, 0)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -400,18 +400,59 @@ tracks/0/keys = {
 "values": [Vector2i(0, 2), Vector2i(1, 2), Vector2i(2, 2), Vector2i(3, 2), Vector2i(4, 2), Vector2i(5, 2)]
 }
 
+[sub_resource type="Animation" id="Animation_tuyoq"]
+resource_name = "Knocked"
+length = 0.4
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("PlayerSprite:frame_coords")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.299081),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [Vector2i(0, 7), Vector2i(1, 7), Vector2i(2, 7), Vector2i(3, 7)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:collision_layer")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [32]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:collision_mask")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_gg7jn"]
 _data = {
-"Accelerate": SubResource("Animation_adi8e"),
-"Idle": SubResource("Animation_u7qlm"),
-"Jump": SubResource("Animation_f0frb"),
-"OverheadCombo1": SubResource("Animation_h8luf"),
-"OverheadCombo2": SubResource("Animation_cxxi6"),
-"OverheadCombo3": SubResource("Animation_tn66e"),
-"OverheadComboSheath": SubResource("Animation_yl3d2"),
-"RESET": SubResource("Animation_ew7q7"),
-"Roll": SubResource("Animation_yhpjp"),
-"Run": SubResource("Animation_lgewq")
+&"Accelerate": SubResource("Animation_adi8e"),
+&"Idle": SubResource("Animation_u7qlm"),
+&"Jump": SubResource("Animation_f0frb"),
+&"Knocked": SubResource("Animation_tuyoq"),
+&"OverheadCombo1": SubResource("Animation_h8luf"),
+&"OverheadCombo2": SubResource("Animation_cxxi6"),
+&"OverheadCombo3": SubResource("Animation_tn66e"),
+&"OverheadComboSheath": SubResource("Animation_yl3d2"),
+&"RESET": SubResource("Animation_ew7q7"),
+&"Roll": SubResource("Animation_yhpjp"),
+&"Run": SubResource("Animation_lgewq")
 }
 
 [node name="Player" type="CharacterBody2D" groups=["players"]]
@@ -431,8 +472,7 @@ texture = ExtResource("1_ptemd")
 centered = false
 offset = Vector2(-42, -55)
 hframes = 28
-vframes = 8
-frame = 28
+vframes = 9
 
 [node name="OC1Area" type="Area2D" parent="PlayerSprite"]
 collision_layer = 0
@@ -457,12 +497,13 @@ collision_layer = 0
 collision_mask = 4
 
 [node name="OC3Hitbox" type="CollisionPolygon2D" parent="PlayerSprite/OC3Area"]
+visible = false
 polygon = PackedVector2Array(-42.6667, -16, -37.6667, -24, -31, -30, -22, -35, -12, -39, 0, -42, 16.6667, -42, 27, -37, 33.3333, -30.6667, 37, -22.6667, 37, -13, 34, 0, 0, 0, 0, -16)
 disabled = true
 
 [node name="AP" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_gg7jn")
+&"": SubResource("AnimationLibrary_gg7jn")
 }
 
 [node name="Swipe1Audio" type="AudioStreamPlayer2D" parent="AP"]
