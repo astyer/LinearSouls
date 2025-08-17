@@ -38,7 +38,7 @@ func _physics_process(delta: float) -> void:
 			new_x_velocity = move_toward(velocity.x, 0, 40)
 			face_player()
 			if($AttackCooldownTimer.is_stopped()):
-				if(distanceToPlayer <= 300):
+				if(distanceToPlayer <= 250):
 					BossHelpers.play_random_animation($AP, ['Stomp', 'JumpStart', 'RockPickup'])
 				elif(distanceToPlayer <= 500):
 					BossHelpers.play_random_animation($AP, ['JumpStart', 'RockPickup'])

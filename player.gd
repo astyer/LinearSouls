@@ -11,6 +11,9 @@ const X_ACCELERATION = 35
 const X_DECELERATION = 25
 const JUMP_VELOCITY = -600.0
 
+const unstoppableAnimations = ['Roll', 'Jump', 'Knocked', 'Getup']
+const attackAnimations = ['OverheadCombo1', 'OverheadCombo2', 'OverheadCombo3', 'OverheadComboSheath']
+
 #stamina
 const ROLL_STAMINA = 20
 const COMBO_1_STAMINA = 15
@@ -26,7 +29,6 @@ var last_pressed_direction: int = 1
 var current_stamina: int = 100
 
 var directionFacing: int = 1
-var isAttacking: bool = false
 var nextAttackRequested: bool = false
 
 func _ready():
@@ -39,6 +41,7 @@ func _physics_process(delta: float) -> void:
 	
 	process_attacks()
 	process_roll()
+	process_jump()
 	process_y_velocity(delta)
 	process_x_velocity()
 	
@@ -51,36 +54,35 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	
 func process_roll() -> void:
-	if(isAttacking):
+	if(unstoppableAnimations.has($AP.current_animation) || attackAnimations.has($AP.current_animation)):
 		return
 	if Input.is_action_just_pressed('space') && is_on_floor() && current_stamina >= ROLL_STAMINA:
 		if current_pressed_direction:
 			last_pressed_direction = current_pressed_direction
 		$AP.play('Roll')
 		stamina_used.emit(ROLL_STAMINA)
-	
+		
+func process_jump() -> void:
+	if(unstoppableAnimations.has($AP.current_animation) || attackAnimations.has($AP.current_animation)):
+		return
+	if Input.is_action_just_pressed('up') && is_on_floor(): 
+		$AP.play('Jump')
+
 func process_attacks() -> void:
-	if isAttacking && Input.is_action_just_pressed('mouse1'):
+	if(unstoppableAnimations.has($AP.current_animation)):
+		return
+	if attackAnimations.has($AP.current_animation) && Input.is_action_just_pressed('mouse1'):
 		nextAttackRequested = true
 		return
-	if Input.is_action_just_pressed('mouse1') && is_on_floor() && $AP.current_animation != 'Roll' && current_stamina >= COMBO_1_STAMINA:
+	if Input.is_action_just_pressed('mouse1') && is_on_floor() && current_stamina >= COMBO_1_STAMINA:
 		$AP.play('OverheadCombo1')
 		stamina_used.emit(COMBO_1_STAMINA)
-		isAttacking = true
 	
 func process_y_velocity(delta: float) -> void:
 	if !is_on_floor():
 		velocity.y += gravity * delta
-	if isAttacking || $AP.current_animation == 'Roll':
-		return
-	if Input.is_action_just_pressed('up') && is_on_floor(): 
-		$AP.play('Jump')
 	
-func process_x_velocity() -> void:
-	if(isAttacking):
-		velocity.x = 0
-		return
-		
+func process_x_velocity() -> void:	
 	match $AP.current_animation:
 		'Roll':
 			velocity.x = move_toward(velocity.x, last_pressed_direction * MAX_X_SPEED, X_ACCELERATION * 3)
@@ -89,11 +91,12 @@ func process_x_velocity() -> void:
 			velocity.x = move_toward(velocity.x, 0, X_ACCELERATION)
 			return
 		'Knocked':
-			velocity.x = move_toward(velocity.x, 0, X_ACCELERATION)
+			velocity.x = move_toward(velocity.x, 0, X_DECELERATION)
 			return
-		'Getup':
-			velocity.x = 0
-			return
+	
+	if(unstoppableAnimations.has($AP.current_animation) || attackAnimations.has($AP.current_animation)):
+		velocity.x = 0
+		return
 			
 	if current_pressed_direction && current_pressed_direction != directionFacing:
 		directionFacing = current_pressed_direction
@@ -110,7 +113,6 @@ func process_x_velocity() -> void:
 	else:
 		new_x_velocity = move_toward(velocity.x, 0, X_DECELERATION)
 		
-		
 	if !$AP.current_animation:
 		if velocity.x == 0 && new_x_velocity == 0:
 			$AP.play('Idle')
@@ -123,7 +125,6 @@ func process_x_velocity() -> void:
 	velocity.x = new_x_velocity
 
 func _on_player_animation_finished(anim_name: StringName) -> void:
-	var current_pressed_direction := Input.get_axis("left", "right")
 	match anim_name:
 		'Jump':
 			velocity.y = JUMP_VELOCITY
@@ -131,13 +132,16 @@ func _on_player_animation_finished(anim_name: StringName) -> void:
 		'Roll':
 			if(current_pressed_direction):
 				$AP.play('Run')
-				return
-			$AP.play_backwards('Accelerate')
+			else:
+				$AP.play_backwards('Accelerate')
 		'Knocked':
 			$AP.play('Getup')
 		'Getup':
 			$InvulnerableTimer.start()
-			$AP.play('Idle')
+			if(current_pressed_direction):
+				$AP.play('Accelerate')
+			else:
+				$AP.play('Idle')
 		'OverheadCombo1':
 			if nextAttackRequested && current_stamina >= COMBO_2_STAMINA:
 				$AP.play('OverheadCombo2')
@@ -151,11 +155,12 @@ func _on_player_animation_finished(anim_name: StringName) -> void:
 				stamina_used.emit(COMBO_3_STAMINA)
 				nextAttackRequested = false
 			else:
-				$AP.play('OverheadComboSheath')	
+				$AP.play('OverheadComboSheath')
 		'OverheadComboSheath':
-			isAttacking = false
-		'OverheadCombo3':
-			isAttacking = false
+			if(current_pressed_direction):
+				$AP.play('Accelerate')
+			else:
+				$AP.play('Idle')
 		
 func handle_hit_boss(damage: int) -> void:
 	# prevent weird multi hit bugs
