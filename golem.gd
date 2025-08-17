@@ -56,7 +56,7 @@ func _physics_process(delta: float) -> void:
 		'RockHold':
 			face_player()
 			if($AttackCooldownTimer.is_stopped()):
-				if(distanceToPlayer <= 400):
+				if(distanceToPlayer <= 300):
 					$AP.play('RockSlam')
 				else:
 					$AP.play('RockThrow')
@@ -105,13 +105,13 @@ func throw_rock() -> void:
 	add_child(rock)
 
 func _on_stomp_area_2d_body_entered(_body: Node2D) -> void:
-	SignalBus.hit_player.emit(25)
+	SignalBus.hit_player.emit(25, 800 * directionFacing)
 
 func _on_jump_area_2d_body_entered(_body: Node2D) -> void:
-	SignalBus.hit_player.emit(60, true)
+	SignalBus.hit_player.emit(60, 1200 * directionToPlayer, true)
 
 func _on_rock_up_area_2d_body_entered(_body: Node2D) -> void:
-	SignalBus.hit_player.emit(15)
+	SignalBus.hit_player.emit(15, 600 * directionFacing)
 
 func _on_rock_slam_area_2d_body_entered(_body: Node2D) -> void:
-	SignalBus.hit_player.emit(20)
+	SignalBus.hit_player.emit(20, 400 * directionFacing)

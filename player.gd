@@ -21,6 +21,7 @@ const COMBO_3_STAMINA = 20
 var gravity: int = ProjectSettings.get_setting("physics/2d/default_gravity")
 
 var prev_x_velocity: float = 0
+var current_pressed_direction: int = 0
 var last_pressed_direction: int = 1
 var current_stamina: int = 100
 
@@ -34,6 +35,7 @@ func _ready():
 
 func _physics_process(delta: float) -> void:
 	current_stamina = get_tree().get_nodes_in_group("staminaBar")[0].value
+	current_pressed_direction = Input.get_axis("left", "right")
 	
 	process_attacks()
 	process_roll()
@@ -52,6 +54,8 @@ func process_roll() -> void:
 	if(isAttacking):
 		return
 	if Input.is_action_just_pressed('space') && is_on_floor() && current_stamina >= ROLL_STAMINA:
+		if current_pressed_direction:
+			last_pressed_direction = current_pressed_direction
 		$AP.play('Roll')
 		stamina_used.emit(ROLL_STAMINA)
 	
@@ -76,61 +80,64 @@ func process_x_velocity() -> void:
 	if(isAttacking):
 		velocity.x = 0
 		return
-	  
-	if($AP.current_animation == 'Roll'):
-		velocity.x = move_toward(velocity.x, last_pressed_direction * MAX_X_SPEED, X_ACCELERATION * 3)
-		return
 		
-	if($AP.current_animation == 'Jump'):
-		velocity.x = move_toward(velocity.x, 0, X_ACCELERATION)
-		return
-		
-	if($AP.current_animation == 'Knocked'):
-		# get knocked
-		return
-	
-	var direction := Input.get_axis("left", "right")
-	
-	if direction != 0 && direction != directionFacing:
-		directionFacing = direction
+	match $AP.current_animation:
+		'Roll':
+			velocity.x = move_toward(velocity.x, last_pressed_direction * MAX_X_SPEED, X_ACCELERATION * 3)
+			return
+		'Jump':
+			velocity.x = move_toward(velocity.x, 0, X_ACCELERATION)
+			return
+		'Knocked':
+			velocity.x = move_toward(velocity.x, 0, X_ACCELERATION)
+			return
+		'Getup':
+			velocity.x = 0
+			return
+			
+	if current_pressed_direction && current_pressed_direction != directionFacing:
+		directionFacing = current_pressed_direction
 		scale.x *= -1
 	
-	if(!direction && (abs(velocity.x) < abs(prev_x_velocity)) && $AP.current_animation == 'Run'):
+	if(!current_pressed_direction && (abs(velocity.x) < abs(prev_x_velocity)) && $AP.current_animation == 'Run'):
 		$AP.play_backwards('Accelerate')
-	if(direction && velocity.x == 0 && prev_x_velocity == 0): #(Input.is_action_just_pressed('right') || Input.is_action_just_pressed('left'))
+	if(current_pressed_direction && velocity.x == 0 && prev_x_velocity == 0):
 		$AP.play('Accelerate')
 		
 	var new_x_velocity: float = velocity.x
-	if direction:
-		new_x_velocity = move_toward(velocity.x, direction * MAX_X_SPEED, X_ACCELERATION)
+	if current_pressed_direction:
+		new_x_velocity = move_toward(velocity.x, current_pressed_direction * MAX_X_SPEED, X_ACCELERATION)
 	else:
 		new_x_velocity = move_toward(velocity.x, 0, X_DECELERATION)
+		
 		
 	if !$AP.current_animation:
 		if velocity.x == 0 && new_x_velocity == 0:
 			$AP.play('Idle')
-		elif direction:
+		elif current_pressed_direction:
 			$AP.play('Run')
-	
-	if direction:
-		last_pressed_direction = direction
+			
+	if current_pressed_direction:
+		last_pressed_direction = current_pressed_direction
 	prev_x_velocity = velocity.x
 	velocity.x = new_x_velocity
 
 func _on_player_animation_finished(anim_name: StringName) -> void:
-	var direction := Input.get_axis("left", "right")
+	var current_pressed_direction := Input.get_axis("left", "right")
 	match anim_name:
 		'Jump':
 			velocity.y = JUMP_VELOCITY
 			#@todo airborne animation
 		'Roll':
-			if(direction):
+			if(current_pressed_direction):
 				$AP.play('Run')
 				return
 			$AP.play_backwards('Accelerate')
 		'Knocked':
-			# play get up
-			pass
+			$AP.play('Getup')
+		'Getup':
+			$InvulnerableTimer.start()
+			$AP.play('Idle')
 		'OverheadCombo1':
 			if nextAttackRequested && current_stamina >= COMBO_2_STAMINA:
 				$AP.play('OverheadCombo2')
@@ -155,6 +162,9 @@ func handle_hit_boss(damage: int) -> void:
 	if $AttackHitTimer.is_stopped():
 		boss_damaged.emit(damage)
 		$AttackHitTimer.start()
+		
+func _on_invulnerable_timer_timeout() -> void:
+	set_collision_layer_value(2, true)
 
 func _on_oc_1_area_body_entered(_body: Node2D) -> void:
 	handle_hit_boss(2)
@@ -165,7 +175,8 @@ func _on_oc_2_area_body_entered(_body: Node2D) -> void:
 func _on_oc_3_area_body_entered(_body: Node2D) -> void:
 	handle_hit_boss(6)
 	
-func _on_hit_player(damage: int, requireOnFloor: bool = false) -> void:
+func _on_hit_player(damage: int, hitVelocity: int, requireOnFloor: bool = false) -> void:
 	if((requireOnFloor && is_on_floor()) || !requireOnFloor):
 		player_damaged.emit(damage)
-		$AP.play('Knocked')	
+		$AP.play('Knocked')
+		velocity.x = hitVelocity

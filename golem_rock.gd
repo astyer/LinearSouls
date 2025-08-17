@@ -21,7 +21,7 @@ func _ready() -> void:
 	global_position.x = global_position.x + (200 * directionToPlayer)
 	global_position.y -= 300
 	
-	velocity.x = directionToPlayer * distanceToPlayer * 2
+	velocity.x = directionToPlayer * distanceToPlayer * 1.8
 	
 func _physics_process(delta: float) -> void:
 	velocity.y += gravity * delta
@@ -35,7 +35,7 @@ func _physics_process(delta: float) -> void:
 	if collision:
 		$AP.play('Break')
 		if collision.get_collider().is_in_group('players'):
-			SignalBus.hit_player.emit(15)
+			SignalBus.hit_player.emit(15, velocity.x)
 
 func _on_rock_area_2d_body_entered(body: Node2D) -> void: #do we even need this area 2d? or can we do this in collision handler?
 	print('hit')

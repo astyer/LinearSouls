@@ -1,10 +1,11 @@
-[gd_scene load_steps=18 format=3 uid="uid://bvvyv6gpos4m8"]
+[gd_scene load_steps=19 format=3 uid="uid://bvvyv6gpos4m8"]
 
 [ext_resource type="Script" uid="uid://cg3dh8fvylj2c" path="res://Main.gd" id="1_4o2l8"]
 [ext_resource type="PackedScene" uid="uid://dki28xl8ak4l6" path="res://scenes/player.tscn" id="2_5t8xr"]
 [ext_resource type="Script" uid="uid://8p25yy1i0u14" path="res://PlayerHealthBar.gd" id="3_jthys"]
 [ext_resource type="PackedScene" uid="uid://23f8dwske8oc" path="res://scenes/floor.tscn" id="3_yx326"]
 [ext_resource type="Script" uid="uid://ikho77yp3hfq" path="res://PlayerStaminaBar.gd" id="4_ihp8q"]
+[ext_resource type="PackedScene" uid="uid://c1bmeprpv8lgl" path="res://scenes/boundary.tscn" id="5_85g3d"]
 [ext_resource type="PackedScene" uid="uid://dcjoexv5aerp" path="res://scenes/golem.tscn" id="6_p6cbk"]
 [ext_resource type="FontFile" uid="uid://bep84kjabwnub" path="res://fonts/NightmarePills-BV2w.ttf" id="7_jy6xd"]
 [ext_resource type="Script" uid="uid://b1uiyos6a0lq4" path="res://BossHealthBar.gd" id="7_wpavt"]
@@ -90,6 +91,20 @@ script = ExtResource("3_jthys")
 
 [node name="Floor" parent="." instance=ExtResource("3_yx326")]
 position = Vector2(960, 1016)
+
+[node name="Roof" parent="." instance=ExtResource("5_85g3d")]
+position = Vector2(960, 100)
+scale = Vector2(20, 1)
+
+[node name="LeftWall" parent="." instance=ExtResource("5_85g3d")]
+position = Vector2(0, 500)
+rotation = 4.71239
+scale = Vector2(10, 1)
+
+[node name="RightWall" parent="." instance=ExtResource("5_85g3d")]
+position = Vector2(1920, 500)
+rotation = 1.5708
+scale = Vector2(10, 1)
 
 [node name="PlayerStaminaBar" type="ProgressBar" parent="." groups=["staminaBar"]]
 offset_top = 32.0

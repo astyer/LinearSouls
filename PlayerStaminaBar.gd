@@ -9,12 +9,10 @@ func _ready() -> void:
 	value = MAX_STAMINA
 	
 func _process(delta) -> void:
-	#print(value)
 	pass
 	
 func _on_player_stamina_used(amount: int) -> void:
-	#pass
-	value -= amount
+	#value -= amount
 	if regen_tween:
 		regen_tween.kill()
 	regen_tween = get_tree().create_tween()
