@@ -77,7 +77,7 @@ shadow_color = Color(0, 0, 0, 0.243137)
 script = ExtResource("1_4o2l8")
 
 [node name="Player" parent="." instance=ExtResource("2_5t8xr")]
-position = Vector2(512, 952)
+position = Vector2(979, 952)
 
 [node name="PlayerHealthBar" type="ProgressBar" parent="."]
 offset_right = 896.0

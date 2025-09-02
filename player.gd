@@ -82,7 +82,7 @@ func process_y_velocity(delta: float) -> void:
 	if !is_on_floor():
 		velocity.y += gravity * delta
 	
-func process_x_velocity() -> void:	
+func process_x_velocity() -> void:
 	match $AP.current_animation:
 		'Roll':
 			velocity.x = move_toward(velocity.x, last_pressed_direction * MAX_X_SPEED, X_ACCELERATION * 3)
@@ -162,26 +162,29 @@ func _on_player_animation_finished(anim_name: StringName) -> void:
 			else:
 				$AP.play('Idle')
 		
-func handle_hit_boss(damage: int) -> void:
+func handle_hit_boss(damage: int, hitVelocity: int) -> void:
 	# prevent weird multi hit bugs
 	if $AttackHitTimer.is_stopped():
-		boss_damaged.emit(damage)
+		SignalBus.hit_boss.emit(hitVelocity)
+		boss_damaged.emit(damage) # maybe freeze time on boss hit and player hit? maybe just parry?
 		$AttackHitTimer.start()
 		
 func _on_invulnerable_timer_timeout() -> void:
 	set_collision_layer_value(2, true)
 
 func _on_oc_1_area_body_entered(_body: Node2D) -> void:
-	handle_hit_boss(2)
+	handle_hit_boss(2, 200 * directionFacing)
 
 func _on_oc_2_area_body_entered(_body: Node2D) -> void:
-	handle_hit_boss(2)
+	handle_hit_boss(2, 200 * directionFacing)
 
 func _on_oc_3_area_body_entered(_body: Node2D) -> void:
-	handle_hit_boss(6)
+	handle_hit_boss(6, 600 * directionFacing)
 	
 func _on_hit_player(damage: int, hitVelocity: int, requireOnFloor: bool = false) -> void:
 	if((requireOnFloor && is_on_floor()) || !requireOnFloor):
 		player_damaged.emit(damage)
+		$AP.play('RESET') # reset properties (so hitboxes aren't active for example)
+		$AP.advance(0)
 		$AP.play('Knocked')
 		velocity.x = hitVelocity

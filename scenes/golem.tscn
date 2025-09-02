@@ -1,7 +1,12 @@
-[gd_scene load_steps=14 format=3 uid="uid://dcjoexv5aerp"]
+[gd_scene load_steps=16 format=3 uid="uid://dcjoexv5aerp"]
 
 [ext_resource type="Script" uid="uid://bs8qqyhn31jur" path="res://golem.gd" id="1_3yl7p"]
 [ext_resource type="Texture2D" uid="uid://cdohgtkh12xak" path="res://sprites/golemBoss-Sheet.png" id="1_s80jd"]
+[ext_resource type="Shader" uid="uid://3bnlho7yrdaj" path="res://shaders/hitflash.gdshader" id="2_w3tsi"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wpr87"]
+shader = ExtResource("2_w3tsi")
+shader_parameter/amplifier = 0.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fay32"]
 size = Vector2(74, 34)
@@ -168,26 +173,26 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("../GolemHurtbox:position")
+tracks/2/path = NodePath("../GolemHurtbox:polygon")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(0, 0)]
+"update": 1,
+"values": [PackedVector2Array(6, 0, 24, -42, 8, -88, -8, -88, -24, -42, -10, 0)]
 }
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("../GolemHurtbox:polygon")
+tracks/3/path = NodePath("../GolemHurtbox:position")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [PackedVector2Array(8, 0, 24, -42.6667, 10.6667, -88, -10.6667, -88, -24, -42.6667, -10.6667, 0)]
+"update": 0,
+"values": [Vector2(0, 0)]
 }
 tracks/4/type = "value"
 tracks/4/imported = false
@@ -423,9 +428,11 @@ _data = {
 [node name="Golem" type="CharacterBody2D"]
 scale = Vector2(4, 4)
 collision_layer = 4
+floor_block_on_wall = false
 script = ExtResource("1_3yl7p")
 
 [node name="GolemSprite" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_wpr87")
 texture = ExtResource("1_s80jd")
 centered = false
 offset = Vector2(-66, -130)
@@ -471,6 +478,7 @@ disabled = true
 
 [node name="AP" type="AnimationPlayer" parent="."]
 root_node = NodePath("../GolemSprite")
+callback_mode_process = 0
 libraries = {
 &"": SubResource("AnimationLibrary_rnkic")
 }
@@ -479,7 +487,7 @@ libraries = {
 one_shot = true
 
 [node name="GolemHurtbox" type="CollisionPolygon2D" parent="."]
-polygon = PackedVector2Array(8, 0, 24, -42.6667, 10.6667, -88, -10.6667, -88, -24, -42.6667, -10.6667, 0)
+polygon = PackedVector2Array(6, 0, 24, -42, 8, -88, -8, -88, -24, -42, -10, 0)
 
 [connection signal="body_entered" from="GolemSprite/StompArea2D" to="." method="_on_stomp_area_2d_body_entered"]
 [connection signal="body_entered" from="GolemSprite/JumpArea2D" to="." method="_on_jump_area_2d_body_entered"]
