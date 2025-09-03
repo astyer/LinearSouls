@@ -184,7 +184,12 @@ func _on_oc_3_area_body_entered(_body: Node2D) -> void:
 func _on_hit_player(damage: int, hitVelocity: int, requireOnFloor: bool = false) -> void:
 	if((requireOnFloor && is_on_floor()) || !requireOnFloor):
 		player_damaged.emit(damage)
-		$AP.play('RESET') # reset properties (so hitboxes aren't active for example)
-		$AP.advance(0)
+		call_deferred('reset_character_state') # if properties are updated here they might not be recognized by physics engine
 		$AP.play('Knocked')
 		velocity.x = hitVelocity
+	
+# having this use all RESET animation track values is tricky (and probably unnecessary) so can update this as needed
+func reset_character_state():
+	$PlayerSprite/OC1Area/OC1Hitbox.disabled = true
+	$PlayerSprite/OC2Area/OC2Hitbox.disabled = true
+	$PlayerSprite/OC3Area/OC3Hitbox.disabled = true

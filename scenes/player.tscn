@@ -218,14 +218,14 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("PlayerSprite/OC1Area:collision_mask")
+tracks/2/path = NodePath("PlayerSprite/OC1Area/OC1Hitbox:disabled")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
 "times": PackedFloat32Array(0.4, 0.5),
 "transitions": PackedFloat32Array(1, 1),
 "update": 1,
-"values": [4, 0]
+"values": [false, true]
 }
 
 [sub_resource type="Animation" id="Animation_cxxi6"]
@@ -258,14 +258,14 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("PlayerSprite/OC2Area:collision_mask")
+tracks/2/path = NodePath("PlayerSprite/OC2Area/OC2Hitbox:disabled")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
-"times": PackedFloat32Array(0.300655, 0.4),
+"times": PackedFloat32Array(0.3, 0.4),
 "transitions": PackedFloat32Array(1, 1),
 "update": 1,
-"values": [4, 0]
+"values": [false, true]
 }
 
 [sub_resource type="Animation" id="Animation_tn66e"]
@@ -298,14 +298,14 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("PlayerSprite/OC3Area:collision_mask")
+tracks/2/path = NodePath("PlayerSprite/OC3Area/OC3Hitbox:disabled")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
 "times": PackedFloat32Array(1, 1.1),
 "transitions": PackedFloat32Array(1, 1),
 "update": 1,
-"values": [4, 0]
+"values": [false, true]
 }
 
 [sub_resource type="Animation" id="Animation_yl3d2"]
@@ -425,62 +425,62 @@ tracks/6/keys = {
 tracks/7/type = "value"
 tracks/7/imported = false
 tracks/7/enabled = true
-tracks/7/path = NodePath("PlayerHurtbox:rotation")
+tracks/7/path = NodePath("PlayerSprite/OC1Area/OC1Hitbox:disabled")
 tracks/7/interp = 1
 tracks/7/loop_wrap = true
 tracks/7/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [-3.14159]
+"update": 1,
+"values": [true]
 }
 tracks/8/type = "value"
 tracks/8/imported = false
 tracks/8/enabled = true
-tracks/8/path = NodePath("PlayerHurtbox:position")
+tracks/8/path = NodePath("PlayerSprite/OC2Area/OC2Hitbox:disabled")
 tracks/8/interp = 1
 tracks/8/loop_wrap = true
 tracks/8/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(0, -11)]
+"update": 1,
+"values": [true]
 }
 tracks/9/type = "value"
 tracks/9/imported = false
 tracks/9/enabled = true
-tracks/9/path = NodePath("PlayerSprite/OC1Area:collision_mask")
+tracks/9/path = NodePath("PlayerSprite/OC3Area/OC3Hitbox:disabled")
 tracks/9/interp = 1
 tracks/9/loop_wrap = true
 tracks/9/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [0]
+"values": [true]
 }
 tracks/10/type = "value"
 tracks/10/imported = false
 tracks/10/enabled = true
-tracks/10/path = NodePath("PlayerSprite/OC2Area:collision_mask")
+tracks/10/path = NodePath("PlayerHurtbox:rotation")
 tracks/10/interp = 1
 tracks/10/loop_wrap = true
 tracks/10/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [0]
+"update": 0,
+"values": [-3.14159]
 }
 tracks/11/type = "value"
 tracks/11/imported = false
 tracks/11/enabled = true
-tracks/11/path = NodePath("PlayerSprite/OC3Area:collision_mask")
+tracks/11/path = NodePath("PlayerHurtbox:position")
 tracks/11/interp = 1
 tracks/11/loop_wrap = true
 tracks/11/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [0]
+"update": 0,
+"values": [Vector2(0, -11)]
 }
 
 [sub_resource type="Animation" id="Animation_yhpjp"]
@@ -577,29 +577,33 @@ vframes = 9
 
 [node name="OC1Area" type="Area2D" parent="PlayerSprite"]
 collision_layer = 0
-collision_mask = 0
+collision_mask = 4
 
 [node name="OC1Hitbox" type="CollisionPolygon2D" parent="PlayerSprite/OC1Area"]
 visible = false
 polygon = PackedVector2Array(18.6667, 0, 26.6667, -2.66667, 32, -8, 32, -8, 32, -18.6667, 32, -18.6667, 28.3333, -23.3333, 23, -25.6667, 0, -24.6667, 0, -2.66667)
+disabled = true
 
 [node name="OC2Area" type="Area2D" parent="PlayerSprite"]
 collision_layer = 0
-collision_mask = 0
+collision_mask = 4
 
 [node name="OC2Hitbox" type="CollisionPolygon2D" parent="PlayerSprite/OC2Area"]
 visible = false
 polygon = PackedVector2Array(-27.3333, -38, 0.333333, -41.3333, 15.6667, -40, 27, -36.3333, 32, -29, 32, -18, 28, -13, 21, -11, 1.33333, -8.66667)
+disabled = true
 
 [node name="OC3Area" type="Area2D" parent="PlayerSprite"]
 collision_layer = 0
-collision_mask = 0
+collision_mask = 4
 
 [node name="OC3Hitbox" type="CollisionPolygon2D" parent="PlayerSprite/OC3Area"]
 visible = false
 polygon = PackedVector2Array(-42.6667, -16, -37.6667, -24, -31, -30, -22, -35, -12, -39, 0, -42, 16.6667, -42, 27, -37, 33.3333, -30.6667, 37, -22.6667, 37, -13, 34, 0, 0, 0, 0, -16)
+disabled = true
 
 [node name="AP" type="AnimationPlayer" parent="."]
+callback_mode_process = 0
 libraries = {
 &"": SubResource("AnimationLibrary_gg7jn")
 }
