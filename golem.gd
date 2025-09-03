@@ -17,8 +17,9 @@ var directionToPlayer: int
 var distanceToPlayer: float
 
 func _ready():
+	SignalBus.hit_boss.connect(_on_hit_boss)
 	$AP.play('Idle')
-
+	
 func _physics_process(delta: float) -> void:
 	if !isOnFloor:
 		velocity.y += gravity * delta 
@@ -28,14 +29,13 @@ func _physics_process(delta: float) -> void:
 		return
 	var player: Player = players[0]
 	
-	var new_x_velocity: float = velocity.x
+	var new_x_velocity: float = move_toward(velocity.x, 0, 40)
 	
 	directionToPlayer = signf(position.direction_to(player.position).x)
 	distanceToPlayer = position.distance_to(player.position)
 	
 	match $AP.assigned_animation:
 		'Idle':
-			new_x_velocity = move_toward(velocity.x, 0, 40)
 			face_player()
 			if($AttackCooldownTimer.is_stopped()):
 				if(distanceToPlayer <= 250):
@@ -54,10 +54,11 @@ func _physics_process(delta: float) -> void:
 			else:
 				new_x_velocity = move_toward(velocity.x, 0, 10)
 		'RockHold':
+			pass
 			face_player()
 			if($AttackCooldownTimer.is_stopped()):
 				if(distanceToPlayer <= 300):
-					$AP.play('RockSlam')
+					BossHelpers.play_random_animation($AP, ['RockSlam', 'RockSlam', 'RockSlam', 'RockThrow'])
 				else:
 					$AP.play('RockThrow')
 			
@@ -80,7 +81,8 @@ func _on_animation_finished(anim_name: StringName) -> void:
 			velocity.y = -1500
 			velocity.x = directionToPlayer * distanceToPlayer * 2
 			isOnFloor = false
-			$AttackCooldownTimer.start(2)
+		'Jump':
+			$AttackCooldownTimer.start(3)
 		'RockPickup':
 			$AP.play('RockHold')
 			$AttackCooldownTimer.start(0.5)
@@ -115,3 +117,8 @@ func _on_rock_up_area_2d_body_entered(_body: Node2D) -> void:
 
 func _on_rock_slam_area_2d_body_entered(_body: Node2D) -> void:
 	SignalBus.hit_player.emit(20, 400 * directionFacing)
+	
+func _on_hit_boss(hitVelocity: int) -> void:
+	velocity.x = hitVelocity
+	var dmg_tween = get_tree().create_tween()
+	dmg_tween.tween_method(func(value): $GolemSprite.material.set_shader_parameter("amplifier", value), .5, 0, .15);
