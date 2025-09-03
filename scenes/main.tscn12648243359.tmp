@@ -1,12 +1,12 @@
 [gd_scene load_steps=19 format=3 uid="uid://bvvyv6gpos4m8"]
 
 [ext_resource type="Script" uid="uid://cg3dh8fvylj2c" path="res://Main.gd" id="1_4o2l8"]
-[ext_resource type="PackedScene" uid="uid://dki28xl8ak4l6" path="res://scenes/player.tscn" id="2_5t8xr"]
+[ext_resource type="PackedScene" uid="uid://dki28xl8ak4l6" path="res://sprites/scenes/player.tscn" id="2_5t8xr"]
 [ext_resource type="Script" uid="uid://8p25yy1i0u14" path="res://PlayerHealthBar.gd" id="3_jthys"]
-[ext_resource type="PackedScene" uid="uid://23f8dwske8oc" path="res://scenes/floor.tscn" id="3_yx326"]
+[ext_resource type="PackedScene" uid="uid://23f8dwske8oc" path="res://sprites/scenes/floor.tscn" id="3_yx326"]
 [ext_resource type="Script" uid="uid://ikho77yp3hfq" path="res://PlayerStaminaBar.gd" id="4_ihp8q"]
-[ext_resource type="PackedScene" uid="uid://c1bmeprpv8lgl" path="res://scenes/boundary.tscn" id="5_85g3d"]
-[ext_resource type="PackedScene" uid="uid://dcjoexv5aerp" path="res://scenes/golem.tscn" id="6_p6cbk"]
+[ext_resource type="PackedScene" uid="uid://c1bmeprpv8lgl" path="res://sprites/scenes/boundary.tscn" id="5_85g3d"]
+[ext_resource type="PackedScene" uid="uid://dcjoexv5aerp" path="res://sprites/scenes/golem.tscn" id="6_p6cbk"]
 [ext_resource type="FontFile" uid="uid://bep84kjabwnub" path="res://fonts/NightmarePills-BV2w.ttf" id="7_jy6xd"]
 [ext_resource type="Script" uid="uid://b1uiyos6a0lq4" path="res://BossHealthBar.gd" id="7_wpavt"]
 

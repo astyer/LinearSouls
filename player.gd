@@ -47,7 +47,7 @@ func _physics_process(delta: float) -> void:
 	
 	for i in get_slide_collision_count():
 		var collision = get_slide_collision(i)
-		if(collision.get_collider().is_in_group('Bosses')):
+		if(collision.get_collider().is_in_group('bosses')):
 			if(collision.get_depth() > 4): #probably need to adjust
 				print('inside boss')
 	
@@ -74,9 +74,12 @@ func process_attacks() -> void:
 	if attackAnimations.has($AP.current_animation) && Input.is_action_just_pressed('mouse1'):
 		nextAttackRequested = true
 		return
-	if Input.is_action_just_pressed('mouse1') && is_on_floor() && current_stamina >= COMBO_1_STAMINA:
-		$AP.play('OverheadCombo1')
-		stamina_used.emit(COMBO_1_STAMINA)
+	if is_on_floor():
+		if Input.is_action_just_pressed('mouse1') && current_stamina >= COMBO_1_STAMINA:
+			$AP.play('OverheadCombo1')
+			stamina_used.emit(COMBO_1_STAMINA)
+		elif Input.is_action_just_pressed('mouse2'):
+			$AP.play('ParryPrep')
 	
 func process_y_velocity(delta: float) -> void:
 	if !is_on_floor():
@@ -184,12 +187,14 @@ func _on_oc_3_area_body_entered(_body: Node2D) -> void:
 func _on_hit_player(damage: int, hitVelocity: int, requireOnFloor: bool = false) -> void:
 	if((requireOnFloor && is_on_floor()) || !requireOnFloor):
 		player_damaged.emit(damage)
-		call_deferred('reset_character_state') # if properties are updated here they might not be recognized by physics engine
+		call_deferred('reset_state') # if properties are updated without deferring here they might not be recognized by physics engine
 		$AP.play('Knocked')
 		velocity.x = hitVelocity
+		var dmg_tween = get_tree().create_tween()
+		dmg_tween.tween_method(func(value): $PlayerSprite.material.set_shader_parameter("amplifier", value), .5, 0, .15);
 	
 # having this use all RESET animation track values is tricky (and probably unnecessary) so can update this as needed
-func reset_character_state():
+func reset_state():
 	$PlayerSprite/OC1Area/OC1Hitbox.disabled = true
 	$PlayerSprite/OC2Area/OC2Hitbox.disabled = true
 	$PlayerSprite/OC3Area/OC3Hitbox.disabled = true

@@ -54,11 +54,10 @@ func _physics_process(delta: float) -> void:
 			else:
 				new_x_velocity = move_toward(velocity.x, 0, 10)
 		'RockHold':
-			pass
 			face_player()
 			if($AttackCooldownTimer.is_stopped()):
 				if(distanceToPlayer <= 300):
-					BossHelpers.play_random_animation($AP, ['RockSlam', 'RockSlam', 'RockSlam', 'RockThrow'])
+					$AP.play('RockSlam')
 				else:
 					$AP.play('RockThrow')
 			

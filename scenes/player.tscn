@@ -1,7 +1,8 @@
-[gd_scene load_steps=21 format=3 uid="uid://dki28xl8ak4l6"]
+[gd_scene load_steps=25 format=3 uid="uid://dki28xl8ak4l6"]
 
 [ext_resource type="Script" uid="uid://dmsd35x26702" path="res://player.gd" id="1_n342f"]
-[ext_resource type="Texture2D" uid="uid://bdehmpe404n6e" path="res://sprites/mainplayer-Sheet.png" id="1_ptemd"]
+[ext_resource type="Texture2D" uid="uid://dl1pes3xg68md" path="res://sprites/mainplayer-Sheet.png" id="1_ptemd"]
+[ext_resource type="Shader" uid="uid://3bnlho7yrdaj" path="res://shaders/hitflash.gdshader" id="2_fjrip"]
 [ext_resource type="AudioStream" uid="uid://bo0xfmm30fmgq" path="res://sfx/swipe1.mp3" id="3_8hag2"]
 [ext_resource type="AudioStream" uid="uid://btgm0t2tqyvru" path="res://sfx/swipe2.mp3" id="4_llh1q"]
 [ext_resource type="AudioStream" uid="uid://8yvvs7dx5h36" path="res://sfx/swipe3.mp3" id="5_axx4h"]
@@ -10,6 +11,10 @@
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_x05kg"]
 radius = 5.0
 height = 22.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_smehm"]
+shader = ExtResource("2_fjrip")
+shader_parameter/amplifier = 0.0
 
 [sub_resource type="Animation" id="Animation_adi8e"]
 resource_name = "Accelerate"
@@ -540,6 +545,38 @@ tracks/0/keys = {
 "values": [Vector2i(0, 2), Vector2i(1, 2), Vector2i(2, 2), Vector2i(3, 2), Vector2i(4, 2), Vector2i(5, 2)]
 }
 
+[sub_resource type="Animation" id="Animation_ky026"]
+resource_name = "ParryPrep"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("PlayerSprite:frame_coords")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [Vector2i(0, 9), Vector2i(1, 9), Vector2i(2, 9), Vector2i(3, 9), Vector2i(4, 9)]
+}
+
+[sub_resource type="Animation" id="Animation_5bs66"]
+resource_name = "Parry"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("PlayerSprite:frame_coords")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [Vector2i(0, 10), Vector2i(1, 10)]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_gg7jn"]
 _data = {
 &"Accelerate": SubResource("Animation_adi8e"),
@@ -551,6 +588,8 @@ _data = {
 &"OverheadCombo2": SubResource("Animation_cxxi6"),
 &"OverheadCombo3": SubResource("Animation_tn66e"),
 &"OverheadComboSheath": SubResource("Animation_yl3d2"),
+&"Parry": SubResource("Animation_5bs66"),
+&"ParryPrep": SubResource("Animation_ky026"),
 &"RESET": SubResource("Animation_ew7q7"),
 &"Roll": SubResource("Animation_yhpjp"),
 &"Run": SubResource("Animation_lgewq")
@@ -569,11 +608,12 @@ rotation = -3.14159
 shape = SubResource("CapsuleShape2D_x05kg")
 
 [node name="PlayerSprite" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_smehm")
 texture = ExtResource("1_ptemd")
 centered = false
 offset = Vector2(-42, -55)
 hframes = 28
-vframes = 9
+vframes = 11
 
 [node name="OC1Area" type="Area2D" parent="PlayerSprite"]
 collision_layer = 0

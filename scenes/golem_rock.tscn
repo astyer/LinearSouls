@@ -139,7 +139,7 @@ shape = SubResource("CircleShape2D_jtdpu")
 
 [node name="AP" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_01jo6")
+&"": SubResource("AnimationLibrary_01jo6")
 }
 
 [connection signal="body_entered" from="RockArea2D" to="." method="_on_rock_area_2d_body_entered"]
