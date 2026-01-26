@@ -137,7 +137,5 @@ offset_bottom = 1017.0
 text = "Guardian Golem"
 label_settings = SubResource("LabelSettings_6cspj")
 
-[connection signal="boss_damaged" from="Player" to="BossHealthBar" method="_on_boss_damaged"]
-[connection signal="player_damaged" from="Player" to="PlayerHealthBar" method="_on_player_damaged"]
 [connection signal="stamina_used" from="Player" to="." method="_on_player_stamina_used"]
 [connection signal="stamina_used" from="Player" to="PlayerStaminaBar" method="_on_player_stamina_used"]

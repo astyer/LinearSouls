@@ -39,3 +39,7 @@ func _on_ap_animation_finished(anim_name: StringName) -> void:
 	match anim_name:
 		'Break':
 			queue_free()
+
+
+func _on_detector_area_2d_area_entered(area: Area2D) -> void:
+	$AP.play('Break')

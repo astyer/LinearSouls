@@ -1,8 +1,9 @@
-[gd_scene load_steps=15 format=3 uid="uid://dcjoexv5aerp"]
+[gd_scene load_steps=16 format=3 uid="uid://dcjoexv5aerp"]
 
 [ext_resource type="Script" uid="uid://bs8qqyhn31jur" path="res://golem.gd" id="1_3yl7p"]
 [ext_resource type="Texture2D" uid="uid://cdohgtkh12xak" path="res://sprites/golemBoss-Sheet.png" id="1_s80jd"]
 [ext_resource type="Material" uid="uid://1obqclolbco" path="res://shaders/hitflash.tres" id="2_w3tsi"]
+[ext_resource type="AudioStream" uid="uid://bh7it6po7pckn" path="res://sfx/golem/rockslam.wav" id="4_wpr87"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fay32"]
 size = Vector2(74, 34)
@@ -253,7 +254,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [PackedVector2Array(6, 0, 24, -42, 8, -88, -52, -86, -66, -72, -66, -58, -56, -48, -22, -42, -10, 0)]
+"values": [PackedVector2Array(6, 0, 24, -42, 8, -88, -52, -86, -66, -72, -66, -58, -53.25, -45.25, -23.75, -40.75, -13, -20.75, -10, 0)]
 }
 
 [sub_resource type="Animation" id="Animation_qgsvv"]
@@ -334,6 +335,18 @@ tracks/2/keys = {
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1),
 "update": 1,
 "values": [PackedVector2Array(6, 0, 22, -48, 18, -84, 1, -88.75, -37.5, -77.25, -36.5, -60.75, -22, -50, -10, 0), PackedVector2Array(6, 0, 25.5, -45.75, 26, -80, 14.75, -88.75, -19.75, -96.25, -25, -87, -18.5, -63.5, -20, -44, -16, 0), PackedVector2Array(6, 0, 24, -42, 36, -68, 29.75, -80.75, -1.25, -104.75, -10.5, -99, -12.25, -79.75, -20, -44, -22, -10, -10.5, -1), PackedVector2Array(6, 0, 24, -42, 42.75, -56, 37.75, -74, 5.5, -106, -3, -99.25, -8.25, -84.25, -20, -56, -28, -38, -28, -8, -13.5, -1), PackedVector2Array(45, -29, 70, -35.25, 66.5, -68.75, 34, -80, -6, -80, -13, -67.5, -9.25, -50.25, 11.5, -37, 26.5, -29.25), PackedVector2Array(8, 0, 44, -14, 43.25, -32.5, 30, -48, -8, -78, -22, -74, -25.75, -60.75, -18.25, -26.25, -19, -0.25), PackedVector2Array(27, -0.25, 32, -16, 28, -48, -8, -78, -22, -74, -25.75, -61.25, -20, -36.5, -18.25, -0.5), PackedVector2Array(15.5, -0.5, 25.25, -53.75, -5, -79.75, -22.25, -86, -32, -74.5, -27, -21.5, -18.25, -0.5), PackedVector2Array(8, 0, 25.25, -45.75, 8, -88, -6, -88, -26.25, -58.5, -35.5, -39.5, -30.5, -23.25, -9.25, -0.5)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("../AP/RockSlam:playing")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.233333),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
 }
 
 [sub_resource type="Animation" id="Animation_6mudt"]
@@ -427,6 +440,9 @@ collision_layer = 4
 floor_block_on_wall = false
 script = ExtResource("1_3yl7p")
 
+[node name="GolemHurtbox" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(6, 0, 24, -42, 8, -88, -8, -88, -24, -42, -10, 0)
+
 [node name="GolemSprite" type="Sprite2D" parent="."]
 material = ExtResource("2_w3tsi")
 texture = ExtResource("1_s80jd")
@@ -437,7 +453,7 @@ vframes = 9
 
 [node name="StompArea2D" type="Area2D" parent="GolemSprite"]
 collision_layer = 8
-collision_mask = 2
+collision_mask = 18
 
 [node name="StompHitbox" type="CollisionPolygon2D" parent="GolemSprite/StompArea2D"]
 visible = false
@@ -456,7 +472,7 @@ disabled = true
 
 [node name="RockUpArea2D" type="Area2D" parent="GolemSprite"]
 collision_layer = 8
-collision_mask = 2
+collision_mask = 18
 
 [node name="RockUpHitbox" type="CollisionPolygon2D" parent="GolemSprite/RockUpArea2D"]
 visible = false
@@ -465,10 +481,9 @@ disabled = true
 
 [node name="RockSlamArea2D" type="Area2D" parent="GolemSprite"]
 collision_layer = 8
-collision_mask = 2
+collision_mask = 18
 
 [node name="RockSlamHitbox" type="CollisionPolygon2D" parent="GolemSprite/RockSlamArea2D"]
-visible = false
 polygon = PackedVector2Array(0, -132, -38, -124, -54, -104, -62, -84, -62, -52, -62, -16, -54, -4, -44, 0, -16, 0, -18, -72, 22, -96, 26, -108, 20, -124)
 disabled = true
 
@@ -479,14 +494,23 @@ libraries = {
 &"": SubResource("AnimationLibrary_rnkic")
 }
 
+[node name="RockSlam" type="AudioStreamPlayer2D" parent="AP"]
+process_mode = 3
+stream = ExtResource("4_wpr87")
+volume_db = -0.798
+
 [node name="AttackCooldownTimer" type="Timer" parent="."]
 one_shot = true
 
-[node name="GolemHurtbox" type="CollisionPolygon2D" parent="."]
-polygon = PackedVector2Array(6, 0, 24, -42, 8, -88, -8, -88, -24, -42, -10, 0)
+[node name="HitPlayerTimer" type="Timer" parent="."]
+wait_time = 0.2
+one_shot = true
 
+[connection signal="area_entered" from="GolemSprite/StompArea2D" to="." method="_on_stomp_area_2d_area_entered"]
 [connection signal="body_entered" from="GolemSprite/StompArea2D" to="." method="_on_stomp_area_2d_body_entered"]
 [connection signal="body_entered" from="GolemSprite/JumpArea2D" to="." method="_on_jump_area_2d_body_entered"]
+[connection signal="area_entered" from="GolemSprite/RockUpArea2D" to="." method="_on_rock_up_area_2d_area_entered"]
 [connection signal="body_entered" from="GolemSprite/RockUpArea2D" to="." method="_on_rock_up_area_2d_body_entered"]
+[connection signal="area_entered" from="GolemSprite/RockSlamArea2D" to="." method="_on_rock_slam_area_2d_area_entered"]
 [connection signal="body_entered" from="GolemSprite/RockSlamArea2D" to="." method="_on_rock_slam_area_2d_body_entered"]
 [connection signal="animation_finished" from="AP" to="." method="_on_animation_finished"]

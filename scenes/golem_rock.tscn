@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://35gp3y16del1"]
+[gd_scene load_steps=8 format=3 uid="uid://35gp3y16del1"]
 
 [ext_resource type="Script" uid="uid://binfdycydsocg" path="res://golem_rock.gd" id="1_eyxwj"]
 [ext_resource type="Texture2D" uid="uid://cykuikbpmv6xc" path="res://sprites/GolemBossRock-Sheet.png" id="2_jiia0"]
@@ -24,38 +24,50 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("RockArea2D/RockHitbox:disabled")
+tracks/1/path = NodePath("AP:speed_scale")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [true]
+"update": 0,
+"values": [1.0]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("AP:speed_scale")
+tracks/2/path = NodePath(".:collision_mask")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [1.0]
+"update": 1,
+"values": [1]
 }
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath(".:collision_mask")
+tracks/3/path = NodePath("RockHurtbox:disabled")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [1]
+"values": [true]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("DetectorArea2D/DetectorCollision:disabled")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
 }
 
 [sub_resource type="Animation" id="Animation_5j30x"]
@@ -75,38 +87,50 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("RockArea2D/RockHitbox:disabled")
+tracks/1/path = NodePath("AP:speed_scale")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [false]
+"update": 0,
+"values": [1.0]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("AP:speed_scale")
+tracks/2/path = NodePath(".:collision_mask")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [1.0]
+"update": 1,
+"values": [19]
 }
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath(".:collision_mask")
+tracks/3/path = NodePath("RockHurtbox:disabled")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 1,
-"values": [3]
+"values": [false]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("DetectorArea2D/DetectorCollision:disabled")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_01jo6"]
@@ -115,9 +139,12 @@ _data = {
 &"RESET": SubResource("Animation_5j30x")
 }
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_38qk2"]
+radius = 21.0238
+
 [node name="GolemRock" type="CharacterBody2D"]
 collision_layer = 8
-collision_mask = 3
+collision_mask = 19
 script = ExtResource("1_eyxwj")
 metadata/_edit_group_ = true
 
@@ -128,13 +155,7 @@ hframes = 3
 vframes = 2
 
 [node name="RockHurtbox" type="CollisionShape2D" parent="."]
-shape = SubResource("CircleShape2D_jtdpu")
-
-[node name="RockArea2D" type="Area2D" parent="."]
-collision_layer = 8
-collision_mask = 3
-
-[node name="RockHitbox" type="CollisionShape2D" parent="RockArea2D"]
+visible = false
 shape = SubResource("CircleShape2D_jtdpu")
 
 [node name="AP" type="AnimationPlayer" parent="."]
@@ -142,5 +163,12 @@ libraries = {
 &"": SubResource("AnimationLibrary_01jo6")
 }
 
-[connection signal="body_entered" from="RockArea2D" to="." method="_on_rock_area_2d_body_entered"]
+[node name="DetectorArea2D" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 16
+
+[node name="DetectorCollision" type="CollisionShape2D" parent="DetectorArea2D"]
+shape = SubResource("CircleShape2D_38qk2")
+
 [connection signal="animation_finished" from="AP" to="." method="_on_ap_animation_finished"]
+[connection signal="area_entered" from="DetectorArea2D" to="." method="_on_detector_area_2d_area_entered"]

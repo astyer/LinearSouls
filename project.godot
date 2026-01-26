@@ -18,6 +18,7 @@ config/features=PackedStringArray("4.4", "GL Compatibility")
 
 BossHelpers="*res://autoloads/bossHelpers.gd"
 SignalBus="*res://autoloads/signal_bus.gd"
+Globals="*res://autoloads/globals.gd"
 
 [display]
 
@@ -80,6 +81,7 @@ space={
 2d_physics/layer_2="Player"
 2d_physics/layer_3="Boss"
 2d_physics/layer_4="BossAttack"
+2d_physics/layer_5="Parry"
 
 [physics]
 
