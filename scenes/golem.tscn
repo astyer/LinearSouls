@@ -495,7 +495,6 @@ libraries = {
 }
 
 [node name="RockSlam" type="AudioStreamPlayer2D" parent="AP"]
-process_mode = 3
 stream = ExtResource("4_wpr87")
 volume_db = -0.798
 

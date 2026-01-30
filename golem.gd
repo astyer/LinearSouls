@@ -18,7 +18,6 @@ var directionToPlayer: int
 var distanceToPlayer: float
 
 func _ready():
-	z_index = -1
 	SignalBus.hit_boss.connect(_on_hit_boss)
 	Globals.parryTimer.connect("timeout", on_parry_timer_timeout)
 	$AP.play('Idle')

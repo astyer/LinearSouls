@@ -4,15 +4,17 @@ extends CharacterBody2D
 
 signal stamina_used
 
+const defaultTexture = preload("res://sprites/mainplayer-Sheet.png")
+const chargedTexture = preload("res://sprites/mainplayer-charged-Sheet.png")
+
 const MAX_X_SPEED = 400
 const X_ACCELERATION = 35
 const X_DECELERATION = 25
 const JUMP_VELOCITY = -600.0
 
 const attackAnimations = ['OverheadCombo1', 'OverheadCombo2', 'OverheadCombo3', 'OverheadComboSheath']
-const parryAnimations = ['ParryPrep', 'ParryHold', 'Parry']
+const parryAnimations = ['ParryPrep', 'ParryHold', 'Parry', 'ParryFail', 'ParrySuccess']
 var unstoppableAnimations = ['Roll', 'Jump', 'Knocked', 'Getup'] + attackAnimations + parryAnimations
-
 
 #stamina
 const ROLL_STAMINA = 20
@@ -31,16 +33,19 @@ var current_stamina: int = 100
 var directionFacing: int = 1
 
 var nextAttackRequested: bool = false
+var inChargedState: bool = false
 
 func _ready():
 	SignalBus.hit_player.connect(_on_hit_player)
 	SignalBus.hit_parry.connect(_on_hit_parry)
-	#Globals.parryTimer.connect("timeout", on_parry_timer_timeout)
+	Globals.parryTimer.connect("timeout", on_parry_timer_timeout)
 	$AP.play('Idle')
 
 func _physics_process(delta: float) -> void:
 	current_stamina = get_tree().get_nodes_in_group("staminaBar")[0].value
 	current_pressed_direction = Input.get_axis("left", "right")
+	
+	print($AP.current_animation)
 	
 	process_jump()
 	process_y_velocity(delta)
@@ -66,10 +71,11 @@ func process_roll() -> void:
 		stamina_used.emit(ROLL_STAMINA)
 		
 func process_jump() -> void:
-	if unstoppableAnimations.has($AP.current_animation):
-		return
-	if Input.is_action_just_pressed('up') && is_on_floor(): 
-		$AP.play('Jump')
+	pass
+	#if unstoppableAnimations.has($AP.current_animation):
+		#return
+	#if Input.is_action_just_pressed('up') && is_on_floor(): 
+		#$AP.play('Jump')
 
 func process_attacks() -> void:
 	if unstoppableAnimations.has($AP.current_animation) && !attackAnimations.has($AP.current_animation):
@@ -130,11 +136,11 @@ func process_x_velocity() -> void:
 	else:
 		new_x_velocity = move_toward(velocity.x, 0, X_DECELERATION)
 		
-	if !$AP.current_animation:
-		if velocity.x == 0 && new_x_velocity == 0:
-			$AP.play('Idle')
-		elif current_pressed_direction:
-			$AP.play('Run')
+	var isStopped = velocity.x == 0 && new_x_velocity == 0
+	if !$AP.current_animation && isStopped:
+		$AP.play('Idle')
+	if (!$AP.current_animation || $AP.current_animation == 'Idle') && !isStopped:
+		$AP.play('Run')
 			
 	if current_pressed_direction:
 		last_pressed_direction = current_pressed_direction
@@ -187,7 +193,14 @@ func _on_player_animation_finished(anim_name: StringName) -> void:
 			$ParryHoldTimer.start()
 			$AP.play('ParryHold')
 		'Parry':
-			$AP.play('OverheadComboSheath')	
+			$AP.play('ParryFail')
+		'ParryFail':
+			$AP.play('OverheadComboSheath')
+		'ParrySuccess':
+			process_mode = Node.PROCESS_MODE_DISABLED
+			$AP.play('ParrySuccessEnd')
+		'ParrySuccessEnd':
+			$AP.play('OverheadComboSheath')
 		
 func handle_hit_boss(damage: int, hitVelocity: int) -> void:
 	# prevent weird multi hit bugs
@@ -218,17 +231,31 @@ func _on_parry_area_body_entered(body: Node2D) -> void:
 func _on_hit_player(damage: int, hitVelocity: int, requireOnFloor: bool = false) -> void:
 	if((requireOnFloor && is_on_floor()) || !requireOnFloor):
 		SignalBus.player_damaged.emit(damage)
-		call_deferred('reset_state') # if properties are updated without deferring here they might not be recognized by physics engine
+		$PlayerSprite.texture = defaultTexture
+		inChargedState = false
 		$AP.play('Knocked')
 		velocity.x = hitVelocity
-		print(velocity)
 		var dmg_tween = get_tree().create_tween()
 		dmg_tween.tween_method(func(value): $PlayerSprite.material.set_shader_parameter("amplifier", value), .5, 0, .15);
+		call_deferred('reset_state') # if properties are updated without deferring here they might not be recognized by physics engine
 		
 func _on_hit_parry() -> void:
-	pass
-	#$AP.play('Jump')
-	#call_deferred('reset_state')
+	if inChargedState:
+		process_mode = Node.PROCESS_MODE_DISABLED
+		$AP.play('ParryFail')
+		Globals.start_parry_timer(0.2)
+	else:
+		$AP.play('ParrySuccess')
+		$PlayerSprite.texture = chargedTexture
+		inChargedState = true
+		Globals.start_parry_timer(0.6)
+	call_deferred('on_hit_parry_deferred')
+	
+func on_hit_parry_deferred() -> void:
+	reset_state()
+	
+func on_parry_timer_timeout() -> void:
+	process_mode = Node.PROCESS_MODE_INHERIT
 	
 # having this use all RESET animation track values is tricky (and probably unnecessary) so can update this as needed
 func reset_state():
