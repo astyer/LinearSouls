@@ -107,6 +107,7 @@ rotation = 1.5708
 scale = Vector2(10, 1)
 
 [node name="PlayerStaminaBar" type="ProgressBar" parent="." groups=["staminaBar"]]
+visible = false
 offset_top = 32.0
 offset_right = 704.0
 offset_bottom = 51.0

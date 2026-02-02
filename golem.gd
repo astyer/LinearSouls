@@ -40,13 +40,15 @@ func _physics_process(delta: float) -> void:
 		'Idle':
 			face_player()
 			if($AttackCooldownTimer.is_stopped()):
-				$AP.play('Idle')
-				#if(distanceToPlayer <= 250):
-					#BossHelpers.play_random_animation($AP, {'Stomp': 60, 'JumpStart': 10, 'RockPickup': 30})
-				#elif(distanceToPlayer <= 600):
-					#BossHelpers.play_random_animation($AP, {'JumpStart': 10, 'RockPickup': 90})
-				#else:
-					#$AP.play('RockPickup')
+				if false:
+					$AP.play('Stomp')
+				else:
+					if(distanceToPlayer <= 250):
+						$AP.play(Helpers.rand_option({'Stomp': 70, 'JumpStart': 10, 'RockPickup': 20}))
+					elif(distanceToPlayer <= 600):
+						$AP.play(Helpers.rand_option({'JumpStart': 10, 'RockPickup': 90}))
+					else:
+						$AP.play('RockPickup')
 		'Jump':
 			if(isOnFloor):
 				if isLandingJump:
@@ -65,9 +67,9 @@ func _physics_process(delta: float) -> void:
 				if(distanceToPlayer <= 250):
 					$AP.play('RockSlam')
 				elif(distanceToPlayer <= 350):
-					BossHelpers.play_random_animation($AP, {'RockSlam': 90, 'RockThrow': 10})
+					$AP.play(Helpers.rand_option({'RockSlam': 90, 'RockThrow': 20}))
 				elif(distanceToPlayer <= 500):
-					BossHelpers.play_random_animation($AP, {'RockSlam': 40, 'RockThrow': 60})
+					$AP.play(Helpers.rand_option({'RockSlam': 40, 'RockThrow': 60}))
 				else:
 					$AP.play('RockThrow')
 			
@@ -123,40 +125,37 @@ func hit_player(damage: int, hitVelocity: int, requireOnFloor: bool = false) -> 
 	$HitPlayerTimer.start()
 	SignalBus.hit_player.emit(damage, hitVelocity, requireOnFloor)
 	
-func on_parried(cooldown: int) -> void:
+func on_parried(cooldown: int, hitVelocity: int) -> void:
 	$AttackCooldownTimer.start(cooldown)
 	z_index = -1
 	SignalBus.hit_parry.emit()
-	call_deferred('on_parried_deferred')
+	call_deferred('on_parried_deferred', hitVelocity)
 	
-func on_parried_deferred() -> void:
+func on_parried_deferred(hitVelocity: int) -> void:
 	reset_state()
+	velocity.x = hitVelocity
 	process_mode = Node.PROCESS_MODE_DISABLED
 	
 func on_parry_timer_timeout() -> void:
 	process_mode = Node.PROCESS_MODE_INHERIT
-	$AP.play('Idle')
+	z_index = 0
+	$AP.play('Idle') #@todo getting parried anim
 
 func _on_stomp_area_2d_body_entered(_body: Node2D) -> void:
 	call_deferred('hit_player', 25, 800 * directionFacing)
-
-func _on_stomp_area_2d_area_entered(area: Area2D) -> void:
-	on_parried(1.5)
-
 func _on_jump_area_2d_body_entered(_body: Node2D) -> void:
 	hit_player(60, 1200 * directionToPlayer, true)
-
 func _on_rock_up_area_2d_body_entered(_body: Node2D) -> void:
 	call_deferred('hit_player', 15, 600 * directionFacing)
-	
-func _on_rock_up_area_2d_area_entered(area: Area2D) -> void: # maybe make not parryable
-	on_parried(1)
-
 func _on_rock_slam_area_2d_body_entered(_body: Node2D) -> void:
 	call_deferred('hit_player', 20, 400 * directionFacing)
 	
+func _on_stomp_area_2d_area_entered(area: Area2D) -> void:
+	on_parried(1.5, 400 * -directionFacing)
+func _on_rock_up_area_2d_area_entered(area: Area2D) -> void: # maybe make not parryable
+	on_parried(1, 200 * -directionFacing)
 func _on_rock_slam_area_2d_area_entered(area: Area2D) -> void:
-	on_parried(2)
+	on_parried(2, 200 * -directionFacing)
 	
 func _on_hit_boss(damage: int, hitVelocity: int) -> void:
 	if !$HitPlayerTimer.is_stopped(): # prevent player from hitting boss in same moment they were hit

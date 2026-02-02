@@ -7,13 +7,20 @@ signal stamina_used
 const defaultTexture = preload("res://sprites/mainplayer-Sheet.png")
 const chargedTexture = preload("res://sprites/mainplayer-charged-Sheet.png")
 
+var hitAudioNode = AudioStreamPlayer2D.new()
+const hit1 = preload("res://sfx/player/hit1.wav")
+const hit2 = preload("res://sfx/player/hit2.wav")
+const hit3 = preload("res://sfx/player/hit3.wav")
+const hit4 = preload("res://sfx/player/hit4.wav")
+const hit7 = preload("res://sfx/player/hit7.wav")
+
 const MAX_X_SPEED = 400
 const X_ACCELERATION = 35
 const X_DECELERATION = 25
 const JUMP_VELOCITY = -600.0
 
 const attackAnimations = ['OverheadCombo1', 'OverheadCombo2', 'OverheadCombo3', 'OverheadComboSheath']
-const parryAnimations = ['ParryPrep', 'ParryHold', 'Parry', 'ParryFail', 'ParrySuccess']
+const parryAnimations = ['ParryPrep', 'ParryHold', 'Parry', 'ParryFail', 'ParrySuccess', 'ParrySuccessEnd']
 var unstoppableAnimations = ['Roll', 'Jump', 'Knocked', 'Getup'] + attackAnimations + parryAnimations
 
 #stamina
@@ -39,13 +46,13 @@ func _ready():
 	SignalBus.hit_player.connect(_on_hit_player)
 	SignalBus.hit_parry.connect(_on_hit_parry)
 	Globals.parryTimer.connect("timeout", on_parry_timer_timeout)
+	hitAudioNode.volume_db = -4
+	add_child(hitAudioNode)
 	$AP.play('Idle')
 
 func _physics_process(delta: float) -> void:
 	current_stamina = get_tree().get_nodes_in_group("staminaBar")[0].value
 	current_pressed_direction = Input.get_axis("left", "right")
-	
-	print($AP.current_animation)
 	
 	process_jump()
 	process_y_velocity(delta)
@@ -57,6 +64,7 @@ func _physics_process(delta: float) -> void:
 	for i in get_slide_collision_count():
 		var collision = get_slide_collision(i)
 		if(collision.get_depth() > 30): # might need to adjust
+			print('max depth collision hit')
 			_on_hit_player(1, -1000 * directionFacing)
 	
 	move_and_slide()
@@ -88,17 +96,25 @@ func process_attacks() -> void:
 			$AP.play('OverheadCombo1')
 			stamina_used.emit(COMBO_1_STAMINA)
 			
+func parry() -> void:
+	$AP/ParryHoldAudio.playing = false
+	stamina_used.emit(PARRY_STAMINA)
+	$AP.play('Parry')
+	
+			
 func process_parry() -> void:
 	if (unstoppableAnimations.has($AP.current_animation) && !parryAnimations.has($AP.current_animation)) || !is_on_floor():
 		return
 	if Input.is_action_just_pressed('mouse2') || Input.is_action_pressed('mouse2'):
 		if !parryAnimations.has($AP.current_animation):
+			if !inChargedState:
+				$AP/ParryHoldAudio.play()
 			$AP.play('ParryPrep')
 	elif Input.is_action_just_released('mouse2'):
 		if $AP.current_animation == 'ParryHold' && current_stamina >= PARRY_STAMINA:
-			stamina_used.emit(PARRY_STAMINA)
-			$AP.play('Parry')
+			parry()
 		else:
+			$AP/ParryHoldAudio.playing = false
 			$AP.play('Idle')
 	
 func process_y_velocity(delta: float) -> void:
@@ -171,6 +187,9 @@ func _on_player_animation_finished(anim_name: StringName) -> void:
 			else:
 				$AP.play('Idle')
 		'OverheadCombo1':
+			if inChargedState:
+				$PlayerSprite.texture = defaultTexture
+				inChargedState = false
 			if nextAttackRequested && current_stamina >= COMBO_2_STAMINA:
 				$AP.play('OverheadCombo2')
 				stamina_used.emit(COMBO_2_STAMINA)
@@ -197,7 +216,7 @@ func _on_player_animation_finished(anim_name: StringName) -> void:
 		'ParryFail':
 			$AP.play('OverheadComboSheath')
 		'ParrySuccess':
-			process_mode = Node.PROCESS_MODE_DISABLED
+			#process_mode = Node.PROCESS_MODE_DISABLED
 			$AP.play('ParrySuccessEnd')
 		'ParrySuccessEnd':
 			$AP.play('OverheadComboSheath')
@@ -206,6 +225,10 @@ func handle_hit_boss(damage: int, hitVelocity: int) -> void:
 	# prevent weird multi hit bugs
 	if $AttackHitTimer.is_stopped():
 		$AttackHitTimer.start()
+		if inChargedState:
+			$AP/EnergyOutAudio.play()
+		hitAudioNode.stream = Helpers.rand_option({hit1: 10, hit2: 30, hit3: 20, hit4: 30, hit7: 10})
+		hitAudioNode.play()
 		SignalBus.hit_boss.emit(damage, hitVelocity)
 		
 func _on_invulnerable_timer_timeout() -> void:
@@ -213,12 +236,16 @@ func _on_invulnerable_timer_timeout() -> void:
 	
 func _on_parry_hold_timer_timeout() -> void:
 	if $AP.current_animation == 'ParryHold':
-		stamina_used.emit(PARRY_STAMINA)
-		$AP.play('Parry')
+		parry()
 
 func _on_oc_1_area_body_entered(_body: Node2D) -> void:
-	handle_hit_boss(2, 200 * directionFacing)
-
+	if inChargedState:
+		handle_hit_boss(10, 400 * directionFacing)
+		$PlayerSprite.texture = defaultTexture
+		inChargedState = false
+	else:
+		handle_hit_boss(2, 200 * directionFacing)
+		
 func _on_oc_2_area_body_entered(_body: Node2D) -> void:
 	handle_hit_boss(2, 200 * directionFacing)
 
@@ -232,6 +259,7 @@ func _on_hit_player(damage: int, hitVelocity: int, requireOnFloor: bool = false)
 	if((requireOnFloor && is_on_floor()) || !requireOnFloor):
 		SignalBus.player_damaged.emit(damage)
 		$PlayerSprite.texture = defaultTexture
+		$AP/ParryHoldAudio.playing = false
 		inChargedState = false
 		$AP.play('Knocked')
 		velocity.x = hitVelocity
@@ -243,6 +271,7 @@ func _on_hit_parry() -> void:
 	if inChargedState:
 		process_mode = Node.PROCESS_MODE_DISABLED
 		$AP.play('ParryFail')
+		$AP/ParrySuccessAudio.play()
 		Globals.start_parry_timer(0.2)
 	else:
 		$AP.play('ParrySuccess')
