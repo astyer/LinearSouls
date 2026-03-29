@@ -17,6 +17,10 @@ var isLandingJump: bool = false
 var directionToPlayer: int
 var distanceToPlayer: float
 
+const STUNNED_REQUIREMENT = 80
+const STUN_REDUCTION = 10
+var stunnedProgress: int = 0
+
 func _ready():
 	SignalBus.hit_boss.connect(_on_hit_boss)
 	Globals.parryTimer.connect("timeout", on_parry_timer_timeout)
@@ -52,7 +56,7 @@ func _physics_process(delta: float) -> void:
 		'Jump':
 			if(isOnFloor):
 				if isLandingJump:
-					$AttackCooldownTimer.start(2)
+					$AttackCooldownTimer.start(1.5)
 					isLandingJump = false
 				$GolemSprite/JumpArea2D/JumpHitbox.disabled = true
 				new_x_velocity = move_toward(velocity.x, 0, 20)
@@ -91,7 +95,7 @@ func _on_animation_finished(anim_name: StringName) -> void:
 			$AttackCooldownTimer.start(1.5)
 		'JumpStart':
 			$AP.play('Jump')
-			velocity.y = -1500
+			velocity.y = -1400
 			velocity.x = directionToPlayer * distanceToPlayer * 2
 			isOnFloor = false
 		'Jump':
@@ -105,6 +109,14 @@ func _on_animation_finished(anim_name: StringName) -> void:
 		'RockThrow':
 			$AP.play('Idle')
 			$AttackCooldownTimer.start(2)
+		'Parried':
+			handle_stun_progress(40)
+			if $AP.current_animation != 'Stunned':
+				$AP.play('Idle')
+			$AttackCooldownTimer.start(0.5)
+		'Stunned':
+			$AP.play('Idle')
+			$AttackCooldownTimer.start(0.5)
 			
 func face_player() -> void:
 	if(directionFacing != directionToPlayer):
@@ -125,8 +137,18 @@ func hit_player(damage: int, hitVelocity: int, requireOnFloor: bool = false) -> 
 	$HitPlayerTimer.start()
 	SignalBus.hit_player.emit(damage, hitVelocity, requireOnFloor)
 	
+func handle_stun_progress(stunProgress: int):
+	if $AP.current_animation == 'Stunned':
+		return
+	stunnedProgress += stunProgress
+	if stunnedProgress >= STUNNED_REQUIREMENT:
+		call_deferred('reset_state')
+		$AP.play('Stunned')
+		stunnedProgress = 0
+	
 func on_parried(cooldown: int, hitVelocity: int) -> void:
 	$AttackCooldownTimer.start(cooldown)
+	stop_all_AP_audio()
 	z_index = -1
 	SignalBus.hit_parry.emit()
 	call_deferred('on_parried_deferred', hitVelocity)
@@ -139,7 +161,7 @@ func on_parried_deferred(hitVelocity: int) -> void:
 func on_parry_timer_timeout() -> void:
 	process_mode = Node.PROCESS_MODE_INHERIT
 	z_index = 0
-	$AP.play('Idle') #@todo getting parried anim
+	$AP.play('Parried')
 
 func _on_stomp_area_2d_body_entered(_body: Node2D) -> void:
 	call_deferred('hit_player', 25, 800 * directionFacing)
@@ -157,13 +179,24 @@ func _on_rock_up_area_2d_area_entered(area: Area2D) -> void: # maybe make not pa
 func _on_rock_slam_area_2d_area_entered(area: Area2D) -> void:
 	on_parried(2, 200 * -directionFacing)
 	
-func _on_hit_boss(damage: int, hitVelocity: int) -> void:
+func _on_hit_boss(damage: int, hitVelocity: int, stunProgress: int) -> void:
 	if !$HitPlayerTimer.is_stopped(): # prevent player from hitting boss in same moment they were hit
 		return
 	SignalBus.boss_damaged.emit(damage)
-	velocity.x = hitVelocity
+	if !$AP.current_animation == 'Stunned':
+		velocity.x = hitVelocity
+	handle_stun_progress(stunProgress)
 	var dmg_tween = get_tree().create_tween()
 	dmg_tween.tween_method(func(value): $GolemSprite.material.set_shader_parameter("amplifier", value), .5, 0, .15);
+	
+func stop_all_AP_audio():
+	for child in $AP.get_children():
+		if child is AudioStreamPlayer2D:
+			child.stop()
+			
+func _on_stunned_progress_timer_timeout() -> void:
+	if stunnedProgress >= STUN_REDUCTION:
+		stunnedProgress -= STUN_REDUCTION
 	
 # having this use all RESET animation track values is tricky (and probably unnecessary) so can update this as needed
 func reset_state():

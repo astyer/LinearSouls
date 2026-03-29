@@ -19,7 +19,7 @@ func _ready() -> void:
 	global_position.x = global_position.x + (200 * directionToPlayer)
 	global_position.y -= 300
 	
-	velocity.x = directionToPlayer * distanceToPlayer * 1.8
+	velocity.x = directionToPlayer * distanceToPlayer * 1.7
 	
 func _physics_process(delta: float) -> void:
 	velocity.y += gravity * delta

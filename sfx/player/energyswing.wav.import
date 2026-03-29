@@ -2,13 +2,13 @@
 
 importer="wav"
 type="AudioStreamWAV"
-uid="uid://c4s75ibv376ay"
-path="res://.godot/imported/swoosh.wav-6d423b6dbf59419049d93efc41979cfd.sample"
+uid="uid://bfm1n3unpronm"
+path="res://.godot/imported/energyswing.wav-b1b82ae8aee5546b47baecf2a9a0fad1.sample"
 
 [deps]
 
-source_file="res://sfx/player/swoosh.wav"
-dest_files=["res://.godot/imported/swoosh.wav-6d423b6dbf59419049d93efc41979cfd.sample"]
+source_file="res://sfx/player/energyswing.wav"
+dest_files=["res://.godot/imported/energyswing.wav-b1b82ae8aee5546b47baecf2a9a0fad1.sample"]
 
 [params]
 

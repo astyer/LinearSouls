@@ -19,7 +19,7 @@ const X_ACCELERATION = 35
 const X_DECELERATION = 25
 const JUMP_VELOCITY = -600.0
 
-const attackAnimations = ['OverheadCombo1', 'OverheadCombo2', 'OverheadCombo3', 'OverheadComboSheath']
+const attackAnimations = ['OverheadCombo1', 'OC2Start', 'OC2AfterChargedStart', 'OverheadCombo2', 'OverheadCombo3', 'OverheadComboSheath', 'OverheadComboSheathAfterCharged']
 const parryAnimations = ['ParryPrep', 'ParryHold', 'Parry', 'ParryFail', 'ParrySuccess', 'ParrySuccessEnd']
 var unstoppableAnimations = ['Roll', 'Jump', 'Knocked', 'Getup'] + attackAnimations + parryAnimations
 
@@ -187,23 +187,34 @@ func _on_player_animation_finished(anim_name: StringName) -> void:
 			else:
 				$AP.play('Idle')
 		'OverheadCombo1':
-			if inChargedState:
-				$PlayerSprite.texture = defaultTexture
-				inChargedState = false
 			if nextAttackRequested && current_stamina >= COMBO_2_STAMINA:
-				$AP.play('OverheadCombo2')
+				if inChargedState:
+					$AP.play('OC2AfterChargedStart')
+				else:
+					$AP.play('OC2Start')
 				stamina_used.emit(COMBO_2_STAMINA)
 				nextAttackRequested = false
 			else:
-				$AP.play('OverheadComboSheath')				
+				if inChargedState:
+					$AP.play('OverheadComboSheathAfterCharged')
+				else:
+					$AP.play('OverheadComboSheath')
+			if inChargedState:
+				$PlayerSprite.texture = defaultTexture
+				inChargedState = false
+		'OC2Start', 'OC2AfterChargedStart':
+			$AP.play('OverheadCombo2')
 		'OverheadCombo2':
 			if nextAttackRequested && current_stamina >= COMBO_3_STAMINA:
 				$AP.play('OverheadCombo3')
+				inChargedState = true
 				stamina_used.emit(COMBO_3_STAMINA)
 				nextAttackRequested = false
 			else:
 				$AP.play('OverheadComboSheath')
-		'OverheadComboSheath':
+		'OverheadCombo3':
+			inChargedState = false
+		'OverheadComboSheath', 'OverheadComboSheathAfterCharged':
 			if(current_pressed_direction):
 				$AP.play('Accelerate')
 			else:
@@ -221,15 +232,16 @@ func _on_player_animation_finished(anim_name: StringName) -> void:
 		'ParrySuccessEnd':
 			$AP.play('OverheadComboSheath')
 		
-func handle_hit_boss(damage: int, hitVelocity: int) -> void:
+func handle_hit_boss(damage: int, hitVelocity: int, stunProgress: int) -> void:
 	# prevent weird multi hit bugs
-	if $AttackHitTimer.is_stopped():
-		$AttackHitTimer.start()
-		if inChargedState:
-			$AP/EnergyOutAudio.play()
-		hitAudioNode.stream = Helpers.rand_option({hit1: 10, hit2: 30, hit3: 20, hit4: 30, hit7: 10})
-		hitAudioNode.play()
-		SignalBus.hit_boss.emit(damage, hitVelocity)
+	if !$AttackHitTimer.is_stopped():
+		return
+	$AttackHitTimer.start()
+	if inChargedState:
+		$AP/EnergyHitAudio.play()
+	hitAudioNode.stream = Helpers.rand_option({hit1: 10, hit2: 30, hit3: 20, hit4: 30, hit7: 10})
+	hitAudioNode.play()
+	SignalBus.hit_boss.emit(damage, hitVelocity, stunProgress)
 		
 func _on_invulnerable_timer_timeout() -> void:
 	set_collision_layer_value(2, true)
@@ -240,20 +252,18 @@ func _on_parry_hold_timer_timeout() -> void:
 
 func _on_oc_1_area_body_entered(_body: Node2D) -> void:
 	if inChargedState:
-		handle_hit_boss(10, 400 * directionFacing)
-		$PlayerSprite.texture = defaultTexture
-		inChargedState = false
+		handle_hit_boss(10, 400 * directionFacing, 20)
 	else:
-		handle_hit_boss(2, 200 * directionFacing)
+		handle_hit_boss(2, 200 * directionFacing, 10)
 		
 func _on_oc_2_area_body_entered(_body: Node2D) -> void:
-	handle_hit_boss(2, 200 * directionFacing)
+	handle_hit_boss(2, 200 * directionFacing, 10)
 
 func _on_oc_3_area_body_entered(_body: Node2D) -> void:
-	handle_hit_boss(6, 600 * directionFacing)
+	handle_hit_boss(6, 600 * directionFacing, 20)
 	
 func _on_parry_area_body_entered(body: Node2D) -> void:
-	handle_hit_boss(1, 100 * directionFacing)
+	handle_hit_boss(1, 100 * directionFacing, 5)
 	
 func _on_hit_player(damage: int, hitVelocity: int, requireOnFloor: bool = false) -> void:
 	if((requireOnFloor && is_on_floor()) || !requireOnFloor):
@@ -286,8 +296,13 @@ func on_hit_parry_deferred() -> void:
 func on_parry_timer_timeout() -> void:
 	process_mode = Node.PROCESS_MODE_INHERIT
 	
+func play_charged_swing_audio() -> void:
+	if inChargedState:
+		$AP/EnergySwingAudio.play()
+	
 # having this use all RESET animation track values is tricky (and probably unnecessary) so can update this as needed
 func reset_state():
+	nextAttackRequested = false
 	$PlayerSprite/OC1Area/OC1Hitbox.disabled = true
 	$PlayerSprite/OC2Area/OC2Hitbox.disabled = true
 	$PlayerSprite/OC3Area/OC3Hitbox.disabled = true

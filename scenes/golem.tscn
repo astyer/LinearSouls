@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://dcjoexv5aerp"]
+[gd_scene load_steps=19 format=3 uid="uid://dcjoexv5aerp"]
 
 [ext_resource type="Script" uid="uid://bs8qqyhn31jur" path="res://golem.gd" id="1_3yl7p"]
 [ext_resource type="Texture2D" uid="uid://cdohgtkh12xak" path="res://sprites/golemBoss-Sheet.png" id="1_s80jd"]
@@ -434,17 +434,75 @@ tracks/2/keys = {
 "values": [false, true]
 }
 
+[sub_resource type="Animation" id="Animation_22jjw"]
+resource_name = "Stunned"
+length = 3.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame_coords")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 3.3, 3.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [Vector2i(0, 9), Vector2i(1, 9), Vector2i(1, 9), Vector2i(3, 9)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../GolemHurtbox:polygon")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 3.3),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [PackedVector2Array(6, 0, 30, -37.5, 20, -81.75, 2.5, -85, -28.75, -33.5, -10, 0), PackedVector2Array(31, -0.25, 32.25, -48, 2.75, -75, -15, -74.5, -19.5, -61.5, -14, 0), PackedVector2Array(18.75, -0.25, 27.5, -46, -0.5, -82.25, -19.75, -81.75, -21.75, -50.25, -16.25, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_bko2c"]
+resource_name = "Parried"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame_coords")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [Vector2i(0, 10), Vector2i(1, 10)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../GolemHurtbox:polygon")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [PackedVector2Array(6, 0, 30, -37.5, 20, -81.75, 2.5, -85, -28.75, -33.5, -10, 0)]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_rnkic"]
 _data = {
 &"Idle": SubResource("Animation_86apg"),
 &"Jump": SubResource("Animation_jny1s"),
 &"JumpStart": SubResource("Animation_5lxil"),
+&"Parried": SubResource("Animation_bko2c"),
 &"RESET": SubResource("Animation_k6614"),
 &"RockHold": SubResource("Animation_8uq4p"),
 &"RockPickup": SubResource("Animation_qgsvv"),
 &"RockSlam": SubResource("Animation_ws18y"),
 &"RockThrow": SubResource("Animation_6mudt"),
-&"Stomp": SubResource("Animation_5d8rx")
+&"Stomp": SubResource("Animation_5d8rx"),
+&"Stunned": SubResource("Animation_22jjw")
 }
 
 [node name="Golem" type="CharacterBody2D"]
@@ -462,7 +520,7 @@ texture = ExtResource("1_s80jd")
 centered = false
 offset = Vector2(-66, -130)
 hframes = 9
-vframes = 9
+vframes = 11
 
 [node name="StompArea2D" type="Area2D" parent="GolemSprite"]
 collision_layer = 8
@@ -513,6 +571,7 @@ volume_db = -1.0
 
 [node name="PullRockAudio" type="AudioStreamPlayer2D" parent="AP"]
 stream = ExtResource("5_22jjw")
+volume_db = -4.0
 
 [node name="AttackCooldownTimer" type="Timer" parent="."]
 one_shot = true
@@ -520,6 +579,10 @@ one_shot = true
 [node name="HitPlayerTimer" type="Timer" parent="."]
 wait_time = 0.2
 one_shot = true
+
+[node name="StunnedProgressTimer" type="Timer" parent="."]
+wait_time = 2.0
+autostart = true
 
 [connection signal="area_entered" from="GolemSprite/StompArea2D" to="." method="_on_stomp_area_2d_area_entered"]
 [connection signal="body_entered" from="GolemSprite/StompArea2D" to="." method="_on_stomp_area_2d_body_entered"]
@@ -529,3 +592,4 @@ one_shot = true
 [connection signal="area_entered" from="GolemSprite/RockSlamArea2D" to="." method="_on_rock_slam_area_2d_area_entered"]
 [connection signal="body_entered" from="GolemSprite/RockSlamArea2D" to="." method="_on_rock_slam_area_2d_body_entered"]
 [connection signal="animation_finished" from="AP" to="." method="_on_animation_finished"]
+[connection signal="timeout" from="StunnedProgressTimer" to="." method="_on_stunned_progress_timer_timeout"]
