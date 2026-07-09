@@ -39,18 +39,18 @@ func _physics_process(delta: float) -> void:
 	
 	directionToPlayer = signf(position.direction_to(player.position).x)
 	distanceToPlayer = position.distance_to(player.position)
-	
+
 	match $AP.assigned_animation:
 		'Idle':
 			face_player()
 			if($AttackCooldownTimer.is_stopped()):
 				if false:
-					$AP.play('Stomp')
+					$AP.play('Idle')
 				else:
 					if(distanceToPlayer <= 250):
 						$AP.play(Helpers.rand_option({'Stomp': 70, 'JumpStart': 10, 'RockPickup': 20}))
-					elif(distanceToPlayer <= 600):
-						$AP.play(Helpers.rand_option({'JumpStart': 10, 'RockPickup': 90}))
+					elif(distanceToPlayer <= 800):
+						$AP.play(Helpers.rand_option({'JumpStart': 30, 'RockPickup': 70}))
 					else:
 						$AP.play('RockPickup')
 		'Jump':

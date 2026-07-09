@@ -17,9 +17,9 @@ func _ready() -> void:
 	var distanceToPlayer = global_position.distance_to(player.global_position)
 
 	global_position.x = global_position.x + (200 * directionToPlayer)
-	global_position.y -= 300
+	global_position.y -= 450
 	
-	velocity.x = directionToPlayer * distanceToPlayer * 1.7
+	velocity.x = directionToPlayer * distanceToPlayer * 1.4
 	
 func _physics_process(delta: float) -> void:
 	velocity.y += gravity * delta

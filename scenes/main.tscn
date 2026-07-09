@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://bvvyv6gpos4m8"]
+[gd_scene load_steps=20 format=3 uid="uid://bvvyv6gpos4m8"]
 
 [ext_resource type="Script" uid="uid://cg3dh8fvylj2c" path="res://Main.gd" id="1_4o2l8"]
 [ext_resource type="PackedScene" uid="uid://dki28xl8ak4l6" path="res://scenes/player.tscn" id="2_5t8xr"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://dcjoexv5aerp" path="res://scenes/golem.tscn" id="6_p6cbk"]
 [ext_resource type="FontFile" uid="uid://bep84kjabwnub" path="res://fonts/NightmarePills-BV2w.ttf" id="7_jy6xd"]
 [ext_resource type="Script" uid="uid://b1uiyos6a0lq4" path="res://BossHealthBar.gd" id="7_wpavt"]
+[ext_resource type="Texture2D" uid="uid://dx5w8e44kil3o" path="res://sprites/golemBackground-Sheet.png" id="10_choun"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w7evh"]
 bg_color = Color(0.255659, 0.255659, 0.255659, 1)
@@ -90,18 +91,22 @@ show_percentage = false
 script = ExtResource("3_jthys")
 
 [node name="Floor" parent="." instance=ExtResource("3_yx326")]
-position = Vector2(960, 1016)
+visible = false
+position = Vector2(960, 1020)
 
 [node name="Roof" parent="." instance=ExtResource("5_85g3d")]
+visible = false
 position = Vector2(960, 100)
 scale = Vector2(20, 1)
 
 [node name="LeftWall" parent="." instance=ExtResource("5_85g3d")]
+visible = false
 position = Vector2(0, 500)
 rotation = 4.71239
 scale = Vector2(10, 1)
 
 [node name="RightWall" parent="." instance=ExtResource("5_85g3d")]
+visible = false
 position = Vector2(1920, 500)
 rotation = 1.5708
 scale = Vector2(10, 1)
@@ -137,6 +142,12 @@ offset_right = 302.0
 offset_bottom = 1017.0
 text = "Guardian Golem"
 label_settings = SubResource("LabelSettings_6cspj")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = -2
+position = Vector2(960, 540)
+scale = Vector2(4, 4)
+texture = ExtResource("10_choun")
 
 [connection signal="stamina_used" from="Player" to="." method="_on_player_stamina_used"]
 [connection signal="stamina_used" from="Player" to="PlayerStaminaBar" method="_on_player_stamina_used"]

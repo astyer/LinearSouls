@@ -14,7 +14,7 @@ const hit3 = preload("res://sfx/player/hit3.wav")
 const hit4 = preload("res://sfx/player/hit4.wav")
 const hit7 = preload("res://sfx/player/hit7.wav")
 
-const MAX_X_SPEED = 400
+const MAX_X_SPEED = 450
 const X_ACCELERATION = 35
 const X_DECELERATION = 25
 const JUMP_VELOCITY = -600.0

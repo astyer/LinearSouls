@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://byux666a0elxf"
-path="res://.godot/imported/golemBoss-Sheet.png-321ac13daff5c0b17416d4c7f965e931.ctex"
+uid="uid://dx5w8e44kil3o"
+path="res://.godot/imported/golemBackground-Sheet.png-74ec3513bdc129b987b94b4cbc42e78a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/golemBoss-Sheet.png"
-dest_files=["res://.godot/imported/golemBoss-Sheet.png-321ac13daff5c0b17416d4c7f965e931.ctex"]
+source_file="res://sprites/golemBackground-Sheet.png"
+dest_files=["res://.godot/imported/golemBackground-Sheet.png-74ec3513bdc129b987b94b4cbc42e78a.ctex"]
 
 [params]
 
